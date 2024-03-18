@@ -3,5 +3,6 @@ project(AssemblerPersonal C)
 
 set(CMAKE_C_STANDARD 90)
 
-add_executable(AssemblerPersonal main.c
-        convertToBaseFour.c)
+add_executable(AssemblerPersonal SourceFiles/main.c
+        SourceFiles/convertToBaseFour.c
+        SourceFiles/firstPass.c)
