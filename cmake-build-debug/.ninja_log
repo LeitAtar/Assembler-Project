@@ -1,3 +1,5 @@
 # ninja log v5
 2	99	7319740584345463	CMakeFiles/AssemblerPersonal.dir/main.c.obj	943ed33bbda7f6e1
 100	310	7319740586390192	AssemblerPersonal.exe	d550aadff7b2a027
+40	249	7325914980916373	CMakeFiles/AssemblerPersonal.dir/SourceFiles/DataStructures.c.obj	a78892fef28a688c
+31	261	7325914981036539	CMakeFiles/AssemblerPersonal.dir/SourceFiles/convertToBaseFour.c.obj	3ff3c8a08eaf63f2

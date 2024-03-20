@@ -1,10 +1,13 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#define MAX_LINE_LENGTH 100
+#include "../HeaderFiles/DataStructurs.h"
+#include "../HeaderFiles/Globals.h"
+
+
 int exe_first_pass(char *file_name) {
     FILE *fp = fopen(file_name, "r");
-    int algoCounter = 1, IC, DC, label_flag = 0;
+    int algoCounter = 1, IC, DC, label_flag = 0, value = 0, error_flag = 0;
     char *str = malloc(MAX_LINE_LENGTH);
     char *token = malloc(MAX_LINE_LENGTH);
 
@@ -16,56 +19,100 @@ int exe_first_pass(char *file_name) {
                 algoCounter++;
             case 2: //done
                 fgets(str, MAX_LINE_LENGTH, fp);
-                if(feof(fp)) {
+                label_flag = 0; //reset
+                if (feof(fp)) {
                     algoCounter = 16;
                     break;
                 }
             case 3:
-                if(is_define(str) == 0) { //if not define statement move to 5
+                token = strtok(str, " ");
+                if (strcmp(token, ".define") != 0) { //if not define statement move to 5
+                    if (strcasecmp(token, ".define") == 0) { //wrong define definition
+                        error_flag = 1;
+                    }
                     algoCounter = 5;
                     break;
                 }
-
-
             case 4:
-                insert_define(str, mdefine);
+                token = strtok(NULL, " "); //name of the define
+                value = atoi(strtok(NULL, "= "));
+                if (value == 0) { //failed to read the value
+                    error_flag = 1;
+                }
+                value = insertToSymbolTable(token,value, "mdefine");
+                if (value == 0) { //failed to insert symbol
+                    error_flag = 1;
+                }
 
                 algoCounter = 2;
                 break;
 
             case 5:
                 token = strtok(str, " "); //first field in the word
-                if(is_label(token) == 0) { //not a label
+
+                if (strchr(token, ':') == NULL) {//not a label
                     algoCounter = 7;
                     break;
                 }
 
+                if (strlen(token) > MAX_LABEL_LENGTH
+                || strchr(token, ' ') != NULL) { //wrong label definition
+                    error_flag = 1;
+                }
+
+
             case 6: //done
                 label_flag = 1;
             case 7:
-                if(is_data_or_string(str) == 0) { //not .data or .string
+                token = strtok(NULL, " ");
+                if (strcmp(token, ".data") != 0
+                || strcmp(token, ".string") != 0) { //not string or data
+                    if (strcasecmp(token, ".data") == 0
+                    || strcasecmp(token, ".string") == 0) { //wrong data or string
+                        error_flag = 1;
+                    }
                     algoCounter = 10;
-                     break;
+                    break;
                 }
-
             case 8:
-
+                token = strtok(str, ": "); //reset token
+                if (label_flag == 1) { //label
+                    if (strcmp(strtok(NULL, " "), ".entry") != 0) { //not .entry
+                        value = insertToSymbolTable(token, DC, ".data");
+                        if (value == 0) { //failed to insert label
+                            error_flag = 1;
+                        }
+                    }
+                    else {
+                        //warning message because .entry label
+                    }
+                }
             case 9:
 
                 algoCounter = 2;
                 break;
             case 10:
-                if(is_extern_or_entry(str) == 0) { //not .extern or .entry
+                if (strstr(str, ".extern") != 0
+                || strstr(str, ".entry") != 0) { //not .extern or .entry
                     algoCounter = 12;
                     break;
                 }
-
             case 11:
-
-
+                if (strstr(str, "extern") == 0) { //if its extern command
+                    while (token != NULL) {
+                        insertToSymbolTable(token, 0, "external");
+                        token = strtok(NULL, ",");
+                    }
+                }
                 algoCounter = 2;
                 break;
             case 12:
+                if (label_flag == 1) {
+                    token = strtok(str, ": "); //label name
+                    if (insertToSymbolTable(token, IC + 100, "code") == 0) { //failed to insert label
+                        error_flag = 1;
+                    }
+                }
 
             case 13:
 

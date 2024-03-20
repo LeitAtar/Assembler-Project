@@ -5,4 +5,7 @@ set(CMAKE_C_STANDARD 90)
 
 add_executable(AssemblerPersonal SourceFiles/main.c
         SourceFiles/convertToBaseFour.c
-        SourceFiles/firstPass.c)
+        SourceFiles/firstPass.c
+        SourceFiles/DataStructures.c
+        HeaderFiles/DataStructurs.h
+        HeaderFiles/Globals.h)

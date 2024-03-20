@@ -1,13 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-
-typedef struct node {
-    char *name;         /* Name associated with the node */
-    char *content;      /* Content stored in the node */
-    int line;           /* Line number associated with the content */
-    struct node *next;  /* Pointer to the next node in the linked list */
-} node;
+#include "../HeaderFiles/DataStructurs.h"
 
 node *make_node(char *name, char *content, int line_num){
     node *temp;
