@@ -73,6 +73,12 @@ build CMakeFiles/AssemblerPersonal.dir/SourceFiles/DataStructures.c.obj: C_COMPI
   OBJECT_DIR = CMakeFiles\AssemblerPersonal.dir
   OBJECT_FILE_DIR = CMakeFiles\AssemblerPersonal.dir\SourceFiles
 
+build CMakeFiles/AssemblerPersonal.dir/SourceFiles/tables.c.obj: C_COMPILER__AssemblerPersonal_unscanned_Debug C$:/Users/dean9/CLionProjects/AssemblerPersonal/SourceFiles/tables.c || cmake_object_order_depends_target_AssemblerPersonal
+  DEP_FILE = CMakeFiles\AssemblerPersonal.dir\SourceFiles\tables.c.obj.d
+  FLAGS = -g -std=gnu90 -fdiagnostics-color=always
+  OBJECT_DIR = CMakeFiles\AssemblerPersonal.dir
+  OBJECT_FILE_DIR = CMakeFiles\AssemblerPersonal.dir\SourceFiles
+
 
 # =============================================================================
 # Link build statements for EXECUTABLE target AssemblerPersonal
@@ -81,7 +87,7 @@ build CMakeFiles/AssemblerPersonal.dir/SourceFiles/DataStructures.c.obj: C_COMPI
 #############################################
 # Link the executable AssemblerPersonal.exe
 
-build AssemblerPersonal.exe: C_EXECUTABLE_LINKER__AssemblerPersonal_Debug CMakeFiles/AssemblerPersonal.dir/SourceFiles/main.c.obj CMakeFiles/AssemblerPersonal.dir/SourceFiles/convertToBaseFour.c.obj CMakeFiles/AssemblerPersonal.dir/SourceFiles/firstPass.c.obj CMakeFiles/AssemblerPersonal.dir/SourceFiles/DataStructures.c.obj
+build AssemblerPersonal.exe: C_EXECUTABLE_LINKER__AssemblerPersonal_Debug CMakeFiles/AssemblerPersonal.dir/SourceFiles/main.c.obj CMakeFiles/AssemblerPersonal.dir/SourceFiles/convertToBaseFour.c.obj CMakeFiles/AssemblerPersonal.dir/SourceFiles/firstPass.c.obj CMakeFiles/AssemblerPersonal.dir/SourceFiles/DataStructures.c.obj CMakeFiles/AssemblerPersonal.dir/SourceFiles/tables.c.obj
   FLAGS = -g
   LINK_LIBRARIES = -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32
   OBJECT_DIR = CMakeFiles\AssemblerPersonal.dir

@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include "../HeaderFiles/DataStructurs.h"
+#include "../HeaderFiles/DataStructures.h"
 
 node *make_node(char *name, char *content, int line_num){
     node *temp;
