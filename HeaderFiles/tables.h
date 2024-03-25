@@ -11,6 +11,8 @@ typedef struct label_address {
 } label_address;
 
 
+
+
 typedef struct other_table {
     char *label_name;
     int assembly_line;
