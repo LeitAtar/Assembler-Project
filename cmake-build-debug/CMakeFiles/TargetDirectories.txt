@@ -1,3 +1,3 @@
-C:/Users/dean9/CLionProjects/AssemblerPersonal/cmake-build-debug/CMakeFiles/AssemblerPersonal.dir
-C:/Users/dean9/CLionProjects/AssemblerPersonal/cmake-build-debug/CMakeFiles/edit_cache.dir
-C:/Users/dean9/CLionProjects/AssemblerPersonal/cmake-build-debug/CMakeFiles/rebuild_cache.dir
+C:/Users/amita/CLionProjects/Assembler-Project/cmake-build-debug/CMakeFiles/AssemblerPersonal.dir
+C:/Users/amita/CLionProjects/Assembler-Project/cmake-build-debug/CMakeFiles/edit_cache.dir
+C:/Users/amita/CLionProjects/Assembler-Project/cmake-build-debug/CMakeFiles/rebuild_cache.dir
