@@ -12,6 +12,7 @@ int findL(char *line)
     strcpy(temp_line, line);
     char *token = strtok(temp_line, ", \t");
     int L = 0, i = 0, is_quote = 0;
+    int len = 0;
 
     while(token != NULL)
     {
