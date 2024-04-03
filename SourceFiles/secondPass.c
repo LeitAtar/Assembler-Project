@@ -8,10 +8,10 @@
 
 int findL(char *line)
 {
-    char temp_line[MAX_LINE_LENGTH];
+    char temp_line[1000];
     strcpy(temp_line, line);
     char *token = strtok(temp_line, ", \t");
-    int L = 0, i = 0, is_quote = 0;
+    int L = 0, i = 0, is_quote = 0, second_r = 0;
 
     while(token != NULL)
     {
@@ -35,11 +35,20 @@ int findL(char *line)
             }
             is_quote = 0;
         }
+        else if(token[0] == 'r' && second_r == 0 && token[1] >= '0' && token[1] <= '7')
+        {
+            second_r = 1;
+            L++;
+        }
+        else if(second_r == 1 && token[0] == 'r' && token[1] >= '0' && token[1] <= '7')
+        {
+            //TODO: check if the number of register is legal
+            second_r = 0;
+        }
         else
         {
             L++;
         }
-
 
         token = strtok(NULL, ", \t\n");
     }
@@ -47,10 +56,80 @@ int findL(char *line)
     return L;
 }
 
+char* decimalToBinary(int num) {
+    // Array to store binary number
+    char *binaryLine = calloc(16,1);
+    char *final;
+    int j = 0;
+    int is_negative = (num < 0) ? 1 : 0;
+    num = abs(num);
+
+    // Counter for binary array
+    int i = 0;
+    while (num > 0) {
+        // Store remainder in binary array
+        binaryLine[i] = num % 2 + '0';
+        num = num / 2;
+        i++;
+    }
+
+    if (is_negative) {
+        // Two's complement
+        for (j = 0; j < 16; j++) {
+            binaryLine[j] = (binaryLine[j] == '0') ? '1' : '0';
+        }
+        // Add 1 to the binary number
+        for (j = 0; j < 16; j++) {
+            if (binaryLine[j] == '1') {
+                binaryLine[j] = '0';
+            } else {
+                binaryLine[j] = '1';
+                break;
+            }
+        }
+    }
+    char *ones = calloc(20,1);
+
+    final = calloc(i,1);
+    int k = 0;
+    // Print binary array in reverse order
+    for (j = i - 1; j >= 0; j--) {
+        //printf("%d", binaryNum[j]);
+        final[k] = binaryLine[j];
+        k++;
+        printf("%c", binaryLine[j]);
+    }
+
+    char *temp = malloc(k + 1);
+
+    for(j = 0; j < k; j++)
+    {
+        temp[j] = final[j];
+    }
+    temp[j+1] = '\0'; // temp = [final
+
+    int len = strlen(temp);
+
+
+    if(is_negative == 1) {
+        for (j = 0; j < 14 - (strlen(temp) - 1); j++) {
+            ones[j] = '1';
+        }
+        strcat(ones, final);
+    }
+
+    printf("\n");
+
+    return ones;
+}
+
+
+
+
 int second_pass(char *filename)
 {
     FILE *fp;
-    fopen(filename, "r");
+    fp = fopen(filename, "r");
 
     if(fp == NULL)
     {
@@ -121,7 +200,7 @@ int second_pass(char *filename)
                 strcpy(temp_line, line);
                 token = strtok(temp_line, " \t");
                 token = strtok(NULL, ", \n\t");
-                insertToSymbolTable(table, token, 0, ".entry");
+                insertToSymbolTable(&table, token, 0, ".entry");
                 algo_counter = 2;
                 break;
             case 7:
