@@ -8,8 +8,8 @@
 int deleteLine(char *file_name, int delete_line)
 {
     FILE *fp, *temp;
-    char *temp_filename = malloc(1000);
-    char buffer[1000];
+    char *temp_filename = malloc(FILENAME_MAX);
+    char buffer[MAX_LINE_LENGTH];
 
     strcpy(temp_filename, "temp____");
     strcat(temp_filename, file_name);
@@ -25,7 +25,7 @@ int deleteLine(char *file_name, int delete_line)
     int keep_reading = 1;
     int current_line = 1;
     do {
-        fgets(buffer, 1000, fp);
+        fgets(buffer, MAX_LINE_LENGTH, fp);
 
         if(current_line != delete_line)
             fputs(buffer, temp);
@@ -69,43 +69,6 @@ macro_list* isInMacroTable(macro_list *table, char *name)
     return NULL;
 }
 
-/*int insertToMacroTable(macro_list *table, char *mcro_name, char *content) //inserts content under the macro name
-{
-    macro_list *node = isInMacroTable(table,mcro_name);
-    if(node != NULL) *//* Only adding a line to content *//*
-    {
-        realloc(content,sizeof(content) + sizeof(node->content));
-        strcat(node->content, content);
-        node->line_amount++;
-    }
-    else *//* Creating a new node *//*
-    {
-        macro_list *new_node = malloc(sizeof(macro_list));
-        new_node->name = mcro_name;
-        new_node->content = content;
-        new_node->line = 0;
-        new_node->line_amount = 0;
-        new_node->next = NULL;
-
-        node = table;
-
-        if(node == NULL)
-        {
-            table = new_node;
-            return 0;
-        }
-
-        while(node->next != NULL)
-        {
-            node = node->next;
-        }
-        node->next = new_node;
-
-    }
-    return 0;
-}*/
-
-
 int insertToMacroTable(macro_list **table, char *mcro_name, char *content) {
     macro_list *node = isInMacroTable(*table, mcro_name);
     if (node != NULL) {
@@ -115,15 +78,15 @@ int insertToMacroTable(macro_list **table, char *mcro_name, char *content) {
         strcat(node->content, content);
         node->line_amount++;
     } else {
-        macro_list *new_node = malloc(1000);
+        macro_list *new_node = malloc(1000); // to change later from 1000
         if (new_node == NULL) {
             // Handle memory allocation failure
             return -1;
         }
-        new_node->name = malloc(1000); // +1 for null terminator
+        new_node->name = malloc(MAX_LINE_LENGTH); // +1 for null terminator
         strcpy(new_node->name, mcro_name);
 
-        new_node->content = malloc(1000); // +1 for null terminator
+        new_node->content = malloc(MAX_LINE_LENGTH); // +1 for null terminator
         strcpy(new_node->content, content);
 
         new_node->line = 0;
@@ -148,7 +111,7 @@ insertLine(char *file_name, int replace_line, char *content)
 {
     FILE *fp, *temp;
     char temp_filename[FILENAME_MAX];
-    char buffer[1000];
+    char buffer[MAX_LINE_LENGTH];
 
     strcpy(temp_filename, "temp____");
     strcat(temp_filename, file_name);
@@ -167,7 +130,7 @@ insertLine(char *file_name, int replace_line, char *content)
 
     do
     {
-        fgets(buffer, 1000, fp);
+        fgets(buffer, MAX_LINE_LENGTH, fp);
         if(current_line == replace_line) {
             fputs(content, temp);
             fputs(buffer, temp);
@@ -195,9 +158,9 @@ insertLine(char *file_name, int replace_line, char *content)
 
 int pre_assemble(char *file_name) {
     FILE *fp, *fp2;
-    char *token;
+    char *token = malloc(MAX_LINE_LENGTH);
     int line_counter = 0, is_mcr = 0, error_flag = 0, i;
-    char *mcro_name = malloc(1000), *line = malloc(1000), *temp_line = malloc(1000);
+    char *mcro_name = malloc(MAX_LINE_LENGTH), *line = malloc(MAX_LINE_LENGTH), *temp_line = malloc(MAX_LINE_LENGTH);
     macro_list *table = NULL;
     macro_list *node = NULL;
 
@@ -208,7 +171,7 @@ int pre_assemble(char *file_name) {
     {
         switch (algo_counter) {
             case 1:
-                fgets(line, 1000, fp);
+                fgets(line, MAX_LINE_LENGTH, fp);
                 strcpy(temp_line, line);
                 line_counter++;
                 if (feof(fp)) {
@@ -226,7 +189,7 @@ int pre_assemble(char *file_name) {
                     fopen(file_name, "r");
                     for(i = 0; i < line_counter; i++)
                     {
-                        fgets(line, 1000, fp);
+                        fgets(line, MAX_LINE_LENGTH, fp);
                     }
                     algo_counter = 1;
                     break;
@@ -261,7 +224,7 @@ int pre_assemble(char *file_name) {
                     fopen(file_name, "r");
                     for(i = 0; i < line_counter; i++)
                     {
-                        fgets(line, 1000, fp);
+                        fgets(line, MAX_LINE_LENGTH, fp);
                     }
                     algo_counter = 1;
                     break;
@@ -274,7 +237,7 @@ int pre_assemble(char *file_name) {
                     fopen(file_name, "r");
                     for(i = 0; i < line_counter; i++)
                     {
-                        fgets(line, 1000, fp);
+                        fgets(line, MAX_LINE_LENGTH, fp);
                     }
                     algo_counter = 1;
                     break;
@@ -295,7 +258,7 @@ int pre_assemble(char *file_name) {
                     fopen(file_name, "r");
                     for(i = 0; i < line_counter; i++)
                     {
-                        fgets(line, 1000, fp);
+                        fgets(line, MAX_LINE_LENGTH, fp);
                     }
                 }
                 else

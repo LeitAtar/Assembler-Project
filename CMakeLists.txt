@@ -12,4 +12,6 @@ add_executable(AssemblerPersonal SourceFiles/main.c
         SourceFiles/tables.c
         HeaderFiles/tables.h
         SourceFiles/preAssembler.c
-        HeaderFiles/preAssembler.h)
+        HeaderFiles/preAssembler.h
+        SourceFiles/secondPass.c
+        HeaderFiles/secondPass.h)
