@@ -8,7 +8,7 @@
 int exe_first_pass(char *file_name) {
     FILE *fp = fopen(file_name, "r");
     int algoCounter = 1, IC, DC, label_flag = 0, value = 0, error_flag = 0, L = 0;
-    char *str = malloc(MAX_LINE_LENGTH);
+    char *str = malloc(MAX_LINE_LENGTH), *temp = malloc(MAX_LINE_LENGTH);
     char *token = malloc(MAX_LINE_LENGTH);
     symbol_list *symbol_table = NULL;
 
@@ -25,7 +25,8 @@ int exe_first_pass(char *file_name) {
                     break;
                 }
             case 3:
-                token = strtok(str, " \t");
+                strcpy(temp, str); //copy the string to temp
+                token = strtok(temp, " \t");
                 if (strcmp(token, ".define") != 0) { //if not define statement move to 5
                     if (strcasecmp(token, ".define") == 0) { //wrong define definition
                         error_flag = 1;
@@ -48,7 +49,8 @@ int exe_first_pass(char *file_name) {
                 break;
 
             case 5:
-                token = strtok(str, " \t"); //first field in the word
+                strcpy(temp, str); //copy the string to temp
+                token = strtok(temp, " \t"); //first field in the word
 
                 if (strchr(token, ':') == NULL) {//not a label
                     algoCounter = 7;
@@ -67,7 +69,8 @@ int exe_first_pass(char *file_name) {
                 token = strtok(NULL, " \t");
             }
             else {
-                token = strtok(str, " \t");
+                strcpy(temp, str); //copy the string to temp
+                token = strtok(temp, " \t");
             }
                 if (strcmp(token, ".data") != 0
                 || strcmp(token, ".string") != 0) { //not string or data
@@ -79,7 +82,8 @@ int exe_first_pass(char *file_name) {
                     break;
                 }
             case 8:
-                token = strtok(str, ":"); //reset token
+                strcpy(temp, str); //copy the string to temp
+                token = strtok(temp, ":"); //reset token
                 if (label_flag == 1) { //label
                     if (strcmp(strtok(NULL, " \t"), ".entry") != 0) { //not .entry CHECK IF NECESSARY
                         value = insertToSymbolTable(symbol_table, token, DC, ".data");
@@ -114,7 +118,8 @@ int exe_first_pass(char *file_name) {
                 break;
             case 12:
                 if (label_flag == 1) {
-                    token = strtok(str, ":"); //label name
+                    strcpy(temp, str); //copy the string to temp
+                    token = strtok(temp, ":"); //label name
                     if (insertToSymbolTable(symbol_table, token, IC + 100, "code") == 1) { //failed to insert label
                         error_flag = 1;
                     }
