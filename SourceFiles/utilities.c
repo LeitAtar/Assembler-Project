@@ -304,6 +304,6 @@ int search_command(char *token) {
     return -1;
 }
 
-const char *check_operand(char *strtok) {
-    return NULL;
+int check_operand(char *strtok) {
+    return -1;
 }

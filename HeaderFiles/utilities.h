@@ -17,4 +17,4 @@ int insertLine(char *file_name, int replace_line, char *content);
 
 int search_command(char *token);
 
-const char *check_operand(char *strtok);
+int check_operand(char *strtok);

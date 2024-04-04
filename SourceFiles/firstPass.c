@@ -12,7 +12,12 @@ int exe_first_pass(char *file_name) {
     int algoCounter = 1, IC, DC, label_flag = 0, value = 0, error_flag = 0, L = 0, i = 0;
     char *str = malloc(MAX_LINE_LENGTH), *temp = malloc(MAX_LINE_LENGTH);
     char *token = malloc(MAX_LINE_LENGTH);
-    char *binary_line = malloc(16);
+    char *binary_line;
+    char *binary_line2;
+    char *binary_line3;
+    char *binary_line4;
+    char *binary_line5;
+
     symbol_list *symbol_table = NULL;
     symbol_list *node = NULL;
 
@@ -136,23 +141,39 @@ int exe_first_pass(char *file_name) {
                     error_flag = 1;
                 }
             case 14:
+                binary_line = malloc(16);
+                binary_line2 = malloc(16);
+                binary_line3 = malloc(16);
+                binary_line4 = malloc(16);
+                binary_line5 = malloc(16);
+
                 L = findL(str);
                 strcpy(binary_line, "0000");
-
+                //opcode
                 token = decimalToBinary(value);
                 for (i = 0; i < 4 - strlen(token); ++i) {
                     strcat(binary_line, "0");
                 }
                 strcat(binary_line, token);
-
-                token = strtok(NULL, ", \t");
                 //source operand
-                strcat(binary_line, check_operand(token));
+                token = strtok(NULL, ", \t");
+                value = check_operand(token);
+                token = decimalToBinary(value);
+                strcat(binary_line, token);
                 //destination operand
                 token = strtok(NULL, ", \t");
-                strcat(binary_line, check_operand(token));
+                value = check_operand(token);
+                token = decimalToBinary(value);
+                strcat(binary_line, token);
                 //A,R,E
                 strcat(binary_line, "00");
+
+                free(binary_line);
+                free(binary_line2);
+                free(binary_line3);
+                free(binary_line4);
+                free(binary_line5);
+
 
             case 15: //done
                 IC += L;
