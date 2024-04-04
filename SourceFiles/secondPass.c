@@ -59,7 +59,7 @@ int findL(char *line)
 char* decimalToBinary(int num) {
     // Array to store binary number
     char *binaryLine = calloc(16,1);
-    char *final;
+    char *reverse_binaryLine;
     int j = 0;
     int is_negative = (num < 0) ? 1 : 0;
     num = abs(num);
@@ -88,34 +88,23 @@ char* decimalToBinary(int num) {
             }
         }
     }
-    char *ones = calloc(20,1);
+    char *ones = calloc(i + 1,1);
 
-    final = calloc(i,1);
+    reverse_binaryLine = calloc(i,1);
     int k = 0;
     // Print binary array in reverse order
     for (j = i - 1; j >= 0; j--) {
         //printf("%d", binaryNum[j]);
-        final[k] = binaryLine[j];
+        reverse_binaryLine[k] = binaryLine[j];
         k++;
-        printf("%c", binaryLine[j]);
     }
-
-    char *temp = malloc(k + 1);
-
-    for(j = 0; j < k; j++)
-    {
-        temp[j] = final[j];
-    }
-    temp[j+1] = '\0'; // temp = [final
-
-    int len = strlen(temp);
-
+    reverse_binaryLine[k] = '\0';
 
     if(is_negative == 1) {
-        for (j = 0; j < 14 - (strlen(temp) - 1); j++) {
+        for (j = 0; j < 14 - strlen(reverse_binaryLine); j++) {
             ones[j] = '1';
         }
-        strcat(ones, final);
+        strcat(ones, reverse_binaryLine);
     }
 
     printf("\n");
