@@ -4,8 +4,8 @@
 #include "../HeaderFiles/DataStructures.h"
 #include "../HeaderFiles/Globals.h"
 
-int insertToSymbolTable(symbol_list *head, char *symbol, int value, const char *identifier) {
-    symbol_list *temp = head;
+int insertToSymbolTable(symbol_list **head, char *symbol, int value, const char *identifier) {
+    symbol_list *temp = *head;
     symbol_list *newSymbol = malloc(sizeof(symbol_list));
     newSymbol->symbol = symbol;
     newSymbol->value = value;
@@ -13,7 +13,7 @@ int insertToSymbolTable(symbol_list *head, char *symbol, int value, const char *
     newSymbol->next = NULL;
 
     if (temp == NULL) {
-        head = newSymbol;
+        *head = newSymbol;
         return 0;
     }
 

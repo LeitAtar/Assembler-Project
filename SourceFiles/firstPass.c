@@ -13,6 +13,7 @@ int exe_first_pass(char *file_name) {
     char *str = malloc(MAX_LINE_LENGTH), *temp = malloc(MAX_LINE_LENGTH);
     char *token = malloc(MAX_LINE_LENGTH);
     symbol_list *symbol_table = NULL;
+    symbol_list *node = NULL;
 
     while(algoCounter != 0) {
         switch (algoCounter) {
@@ -39,10 +40,10 @@ int exe_first_pass(char *file_name) {
             case 4:
                 token = strtok(NULL, " \t"); //name of the define
                 value = atoi(strtok(NULL, "= \t"));
-                if (value == 1) { //failed to read the value
+                if (value == 0) { //failed to read the value
                     error_flag = 1;
                 }
-                value = insertToSymbolTable(symbol_table, token,value, "mdefine");
+                value = insertToSymbolTable(&symbol_table, token,value, "mdefine");
                 if (value == 1) { //failed to insert symbol
                     error_flag = 1;
                 }
@@ -67,28 +68,27 @@ int exe_first_pass(char *file_name) {
             case 6: //done
                 label_flag = 1;
             case 7:
-            if (label_flag == 1) {
-                token = strtok(NULL, " \t");
-            }
-            else {
                 strcpy(temp, str); //copy the string to temp
                 token = strtok(temp, " \t");
+            if (label_flag == 1) { //advance to next field because it's a label
+                token = strtok(NULL, " \t");
             }
-                if (strcmp(token, ".data") != 0
-                || strcmp(token, ".string") != 0) { //not string or data
+
+            if (strcmp(token, ".data") != 0
+            && strcmp(token, ".string") != 0) { //not string or data
                     if (strcasecmp(token, ".data") == 0
                     || strcasecmp(token, ".string") == 0) { //wrong data or string
                         error_flag = 1;
                     }
                     algoCounter = 10;
                     break;
-                }
+            }
             case 8:
                 strcpy(temp, str); //copy the string to temp
                 token = strtok(temp, ":"); //reset token
                 if (label_flag == 1) { //label
-                    if (strcmp(strtok(NULL, " \t"), ".entry") != 0) { //not .entry CHECK IF NECESSARY
-                        value = insertToSymbolTable(symbol_table, token, DC, ".data");
+                    if (strcmp(strtok(NULL, " \t"), ".entry") != 0) { //not .entry
+                        value = insertToSymbolTable(&symbol_table, token, DC, ".data");
                         if (value == 1) { //failed to insert label
                             error_flag = 1;
                         }
@@ -110,7 +110,7 @@ int exe_first_pass(char *file_name) {
             case 11:
                 if (strstr(str, "extern") == 0) { //if its extern command
                     while (token != NULL) {
-                        if (insertToSymbolTable(symbol_table, token, 69, "external") == 1) { //failed to insert label
+                        if (insertToSymbolTable(&symbol_table, token, 69, "external") == 1) { //failed to insert label
                             error_flag = 1;
                         }
                         token = strtok(NULL, ",");
@@ -122,7 +122,7 @@ int exe_first_pass(char *file_name) {
                 if (label_flag == 1) {
                     strcpy(temp, str); //copy the string to temp
                     token = strtok(temp, ":"); //label name
-                    if (insertToSymbolTable(symbol_table, token, IC + 100, "code") == 1) { //failed to insert label
+                    if (insertToSymbolTable(&symbol_table, token, IC + 100, "code") == 1) { //failed to insert label
                         error_flag = 1;
                     }
                 }
@@ -130,6 +130,7 @@ int exe_first_pass(char *file_name) {
             case 13:
 
             case 14:
+                L = findL(str);
 
             case 15: //done
                 IC += L;
@@ -140,13 +141,24 @@ int exe_first_pass(char *file_name) {
                     algoCounter = 0; //finished first pass with errors
                     break;
                 }
-            case 17:
-
+            case 17: //done
+                node = symbol_table;
+                while (node != NULL) {
+                    if (strcmp(node -> identifier, "data") == 0) {
+                        node -> value += IC + 100;
+                    }
+                    node = node -> next;
+                }
             case 18: //done
                 algoCounter = 0; //finished first pass successfully
                 break;
             default:
-                return -1;
+                return 1;
         }
     }
+
+    if (error_flag == 1) {
+        return 1;
+    }
+    return 0;
 }

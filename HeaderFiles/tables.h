@@ -18,4 +18,4 @@ typedef struct other_table {
     int assembly_line;
 } other_table;
 
-int insertToSymbolTable(symbol_list *head, char *token, int value, const char *string);
+int insertToSymbolTable(symbol_list **head, char *token, int value, const char *string);
