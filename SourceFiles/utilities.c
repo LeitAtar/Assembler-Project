@@ -115,3 +115,154 @@ int findL(char *line)
 
     return L;
 }
+
+int deleteLine(char *file_name, int delete_line)
+{
+    FILE *fp, *temp;
+    char *temp_filename = malloc(FILENAME_MAX);
+    char buffer[MAX_LINE_LENGTH];
+
+    strcpy(temp_filename, "temp____");
+    strcat(temp_filename, file_name);
+    fp = fopen(file_name, "r");
+    temp = fopen(temp_filename, "w");
+
+    if(fp == NULL || temp == NULL)
+    {
+        printf("Error opening file.\n");
+        return 1;
+    }
+
+    int keep_reading = 1;
+    int current_line = 1;
+    do {
+        fgets(buffer, MAX_LINE_LENGTH, fp);
+
+        if(current_line != delete_line)
+            fputs(buffer, temp);
+
+        if(feof(fp)) {
+            keep_reading = 0;
+        }
+
+        current_line++;
+
+    } while(keep_reading);
+
+    fclose(fp);
+    fclose(temp);
+
+
+    if(remove(file_name) != 0) {
+        printf("Error deleting file.\n");
+        return 1;
+    }
+    //remove(file_name);
+    //rename(temp_filename, file_name);
+
+    if (rename(temp_filename, file_name) != 0) {
+        printf("Error renaming file.\n");
+        return 1;
+    }
+    //rename(temp_filename, "harta.txt");
+
+    return 0;
+}
+
+macro_list* isInMacroTable(macro_list *table, char *name)
+{
+    macro_list *node = table;
+    while(node != NULL)
+    {
+        if(strcmp(node->name, name) == 0)
+            return node;
+        node = node->next;
+    }
+    return NULL;
+}
+
+int insertToMacroTable(macro_list **table, char *mcro_name, char *content) {
+    macro_list *node = isInMacroTable(*table, mcro_name);
+    if (node != NULL) {
+        // Reallocate memory for combined content
+        size_t new_size = strlen(node->content) + strlen(content) + 1; // +1 for null terminator
+        node->content = realloc(node->content, new_size);
+        strcat(node->content, content);
+        node->line_amount++;
+    } else {
+        macro_list *new_node = malloc(1000); // to change later from 1000
+        if (new_node == NULL) {
+            // Handle memory allocation failure
+            return -1;
+        }
+        new_node->name = malloc(MAX_LINE_LENGTH); // +1 for null terminator
+        strcpy(new_node->name, mcro_name);
+
+        new_node->content = malloc(MAX_LINE_LENGTH); // +1 for null terminator
+        strcpy(new_node->content, content);
+
+        new_node->line = 0;
+        new_node->line_amount = 0;
+        new_node->next = NULL;
+
+        // Update table
+        if (*table == NULL) {
+            *table = new_node;
+        } else {
+            macro_list *temp = *table;
+            while (temp->next != NULL) {
+                temp = temp->next;
+            }
+            temp->next = new_node;
+        }
+    }
+    return 0;
+}
+
+int insertLine(char *file_name, int replace_line, char *content)
+{
+    FILE *fp, *temp;
+    char temp_filename[FILENAME_MAX];
+    char buffer[MAX_LINE_LENGTH];
+
+    strcpy(temp_filename, "temp____");
+    strcat(temp_filename, file_name);
+
+    fp = fopen(file_name, "r");
+    temp = fopen(temp_filename, "w");
+
+    if(fp == NULL || temp == NULL)
+    {
+        printf("Error opening file.\n");
+        return 1;
+    }
+
+    int keep_reading = 1;
+    int current_line = 1;
+
+    do
+    {
+        fgets(buffer, MAX_LINE_LENGTH, fp);
+        if(current_line == replace_line) {
+            fputs(content, temp);
+            fputs(buffer, temp);
+        }
+        else
+            fputs(buffer, temp);
+
+        if(feof(fp))
+            keep_reading = 0;
+
+
+        current_line++;
+
+    } while(keep_reading);
+
+    fclose(fp);
+    fclose(temp);
+
+    remove(file_name);
+    rename(temp_filename, file_name);
+
+    return 0;
+}
