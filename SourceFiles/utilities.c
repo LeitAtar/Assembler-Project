@@ -266,3 +266,44 @@ int insertLine(char *file_name, int replace_line, char *content)
 
     return 0;
 }
+
+int search_command(char *token) {
+    if (strcmp(token, "mov") == 0)
+        return 0;
+    if (strcmp(token, "cmp") == 0)
+        return 1;
+    if (strcmp(token, "add") == 0)
+        return 2;
+    if (strcmp(token, "sub") == 0)
+        return 3;
+    if (strcmp(token, "not") == 0)
+        return 4;
+    if (strcmp(token, "clr") == 0)
+        return 5;
+    if (strcmp(token, "lea") == 0)
+        return 6;
+    if (strcmp(token, "inc") == 0)
+        return 7;
+    if (strcmp(token, "dec") == 0)
+        return 8;
+    if (strcmp(token, "jmp") == 0)
+        return 9;
+    if (strcmp(token, "bne") == 0)
+        return 10;
+    if (strcmp(token, "red") == 0)
+        return 11;
+    if (strcmp(token, "prn") == 0)
+        return 12;
+    if (strcmp(token, "jsr") == 0)
+        return 13;
+    if (strcmp(token, "rts") == 0)
+        return 14;
+    if (strcmp(token, "hlt") == 0)
+        return 15;
+
+    return -1;
+}
+
+const char *check_operand(char *strtok) {
+    return NULL;
+}

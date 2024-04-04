@@ -9,9 +9,10 @@
 
 int exe_first_pass(char *file_name) {
     FILE *fp = fopen(file_name, "r");
-    int algoCounter = 1, IC, DC, label_flag = 0, value = 0, error_flag = 0, L = 0;
+    int algoCounter = 1, IC, DC, label_flag = 0, value = 0, error_flag = 0, L = 0, i = 0;
     char *str = malloc(MAX_LINE_LENGTH), *temp = malloc(MAX_LINE_LENGTH);
     char *token = malloc(MAX_LINE_LENGTH);
+    char *binary_line = malloc(16);
     symbol_list *symbol_table = NULL;
     symbol_list *node = NULL;
 
@@ -118,7 +119,7 @@ int exe_first_pass(char *file_name) {
                 }
                 algoCounter = 2;
                 break;
-            case 12:
+            case 12: //done
                 if (label_flag == 1) {
                     strcpy(temp, str); //copy the string to temp
                     token = strtok(temp, ":"); //label name
@@ -128,9 +129,30 @@ int exe_first_pass(char *file_name) {
                 }
 
             case 13:
-
+                strcpy(temp, str); //copy the string to temp
+                token = strtok(temp, " \t");
+                value = search_command(token);
+                if (value == -1) { //not a command
+                    error_flag = 1;
+                }
             case 14:
                 L = findL(str);
+                strcpy(binary_line, "0000");
+
+                token = decimalToBinary(value);
+                for (i = 0; i < 4 - strlen(token); ++i) {
+                    strcat(binary_line, "0");
+                }
+                strcat(binary_line, token);
+
+                token = strtok(NULL, ", \t");
+                //source operand
+                strcat(binary_line, check_operand(token));
+                //destination operand
+                token = strtok(NULL, ", \t");
+                strcat(binary_line, check_operand(token));
+                //A,R,E
+                strcat(binary_line, "00");
 
             case 15: //done
                 IC += L;
