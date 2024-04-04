@@ -4,6 +4,8 @@
 #include "../HeaderFiles/DataStructures.h"
 #include "../HeaderFiles/Globals.h"
 #include "../HeaderFiles/tables.h"
+#include "../HeaderFiles/firstPass.h"
+#include "../HeaderFiles/utilities.h"
 
 int exe_first_pass(char *file_name) {
     FILE *fp = fopen(file_name, "r");
