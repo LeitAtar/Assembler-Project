@@ -7,18 +7,41 @@
 #include "../HeaderFiles/firstPass.h"
 #include "../HeaderFiles/utilities.h"
 
+symbol_list *symbol_table = NULL;
+
 int exe_first_pass(char *file_name) {
     FILE *fp = fopen(file_name, "r");
+
+    char *token = malloc(MAX_LINE_LENGTH);
+    strcpy(token, file_name);
+    token = strtok(token, ".txt");
+    strcat(token, ".am");
+    FILE *pre_assembled = fopen(token, "r");
+
+    if (fp == NULL || pre_assembled == NULL) {
+        printf("Error opening file.\n");
+        return 1;
+    }
+
+    while (!feof(fp)) {
+        fgets(token, MAX_LINE_LENGTH, fp);
+        fprintf(pre_assembled, "%s", token);
+    }
+
+    fclose(fp);
+    fclose(pre_assembled);
+
+    fp = fopen(file_name, "r");
+
     int algoCounter = 1, IC, DC, label_flag = 0, value = 0, error_flag = 0, L = 0, i = 0;
     char *str = malloc(MAX_LINE_LENGTH), *temp = malloc(MAX_LINE_LENGTH);
-    char *token = malloc(MAX_LINE_LENGTH);
     char *binary_line;
     char *binary_line2;
     char *binary_line3;
     char *binary_line4;
     char *binary_line5;
 
-    symbol_list *symbol_table = NULL;
+    symbol_table = NULL;
     symbol_list *node = NULL;
 
     while(algoCounter != 0) {
@@ -203,5 +226,6 @@ int exe_first_pass(char *file_name) {
     if (error_flag == 1) {
         return 1;
     }
+
     return 0;
 }

@@ -157,14 +157,14 @@ int deleteLine(char *file_name, int delete_line)
         printf("Error deleting file.\n");
         return 1;
     }
-    //remove(file_name);
-    //rename(temp_filename, file_name);
 
     if (rename(temp_filename, file_name) != 0) {
         printf("Error renaming file.\n");
         return 1;
     }
-    //rename(temp_filename, "harta.txt");
+
+    free(temp_filename);
+
 
     return 0;
 }

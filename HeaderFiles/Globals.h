@@ -2,6 +2,8 @@
 #define LABRATORY_C_FINAL_PROJECT_GLOBALS_H
 /*The File contain all the global values in the program*/
 
+symbol_list *symbol_table;
+
 /* Maximum length of a label in command line  */
 #define MAX_LABEL_LENGTH 31
 
