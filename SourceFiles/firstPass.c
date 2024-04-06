@@ -10,28 +10,17 @@
 symbol_list *symbol_table = NULL;
 
 int exe_first_pass(char *file_name) {
-    FILE *fp = fopen(file_name, "r");
 
     char *token = malloc(MAX_LINE_LENGTH);
     strcpy(token, file_name);
-    token = strtok(token, ".txt");
     strcat(token, ".am");
-    FILE *pre_assembled = fopen(token, "r");
+    FILE *fp = fopen(token, "r");
+    FILE *machine = fopen("temp____", "w");
 
-    if (fp == NULL || pre_assembled == NULL) {
+    if (fp == NULL || machine == NULL) {
         printf("Error opening file.\n");
         return 1;
     }
-
-    while (!feof(fp)) {
-        fgets(token, MAX_LINE_LENGTH, fp);
-        fprintf(pre_assembled, "%s", token);
-    }
-
-    fclose(fp);
-    fclose(pre_assembled);
-
-    fp = fopen(file_name, "r");
 
     int algoCounter = 1, IC, DC, label_flag = 0, value = 0, error_flag = 0, L = 0, i = 0;
     char *str = malloc(MAX_LINE_LENGTH), *temp = malloc(MAX_LINE_LENGTH);
@@ -40,6 +29,7 @@ int exe_first_pass(char *file_name) {
     char *binary_line3;
     char *binary_line4;
     char *binary_line5;
+    char *op1 = malloc(MAX_LINE_LENGTH), *op2 = malloc(MAX_LINE_LENGTH);
 
     symbol_table = NULL;
     symbol_list *node = NULL;
@@ -164,39 +154,21 @@ int exe_first_pass(char *file_name) {
                     error_flag = 1;
                 }
             case 14:
-                binary_line = malloc(16);
-                binary_line2 = malloc(16);
-                binary_line3 = malloc(16);
-                binary_line4 = malloc(16);
-                binary_line5 = malloc(16);
-
                 L = findL(str);
-                strcpy(binary_line, "0000");
-                //opcode
-                token = decimalToBinary(value);
-                for (i = 0; i < 4 - strlen(token); ++i) {
-                    strcat(binary_line, "0");
+                if (L == -1) { //failed to find L
+                    error_flag = 1;
                 }
-                strcat(binary_line, token);
-                //source operand
-                token = strtok(NULL, ", \t");
-                value = check_operand(token);
-                token = decimalToBinary(value);
-                strcat(binary_line, token);
-                //destination operand
-                token = strtok(NULL, ", \t");
-                value = check_operand(token);
-                token = decimalToBinary(value);
-                strcat(binary_line, token);
-                //A,R,E
-                strcat(binary_line, "00");
 
-                free(binary_line);
-                free(binary_line2);
-                free(binary_line3);
-                free(binary_line4);
-                free(binary_line5);
-
+                strcpy(temp, str); //copy the string to temp
+                if (strstr(temp, ":") !=NULL) { /*skip label*/
+                    token = strtok(temp, ":");
+                    token = strtok(NULL, " \t");
+                }
+                else {
+                    strcpy(token, temp);
+                }
+                token = to_binary(token);
+                fprintf(machine, "%s", token);
 
             case 15: //done
                 IC += L;

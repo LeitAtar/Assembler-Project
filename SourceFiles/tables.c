@@ -12,6 +12,7 @@ int insertToSymbolTable(symbol_list **head, char *symbol, int value, const char 
     newSymbol->identifier = identifier;
     newSymbol->next = NULL;
 
+
     if (temp == NULL) {
         *head = newSymbol;
         return 0;

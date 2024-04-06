@@ -3,7 +3,8 @@
 
 #endif //ASSEMBLERPERSONAL_UTILITIES_H
 
-char* decimalToBinary(int num);
+char* decimalToBinaryOLD(int num);
+char* decimalToBinary(int num, int length);
 
 int findL(char *line);
 
@@ -18,3 +19,6 @@ int insertLine(char *file_name, int replace_line, char *content);
 int search_command(char *token);
 
 int check_operand(char *strtok);
+
+char *to_binary (char *line);
+

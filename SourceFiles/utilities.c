@@ -6,7 +6,7 @@
 #include "../HeaderFiles/tables.h"
 #include "../HeaderFiles/secondPass.h"
 
-char* decimalToBinary(int num) {
+char* decimalToBinaryOLD(int num) {
     // Array to store binary number
     char *binaryLine = calloc(14,1);
     char *reverse_binaryLine;
@@ -65,6 +65,84 @@ char* decimalToBinary(int num) {
     free(reverse_binaryLine);
     return ones;
 }
+
+char* decimalToBinary(int num, int length) {
+    // Array to store binary number
+    char *binaryLine = calloc(14,1);
+    char *reverse_binaryLine;
+    char *ones;
+    int j = 0;
+    int is_negative = (num < 0) ? 1 : 0;
+    num = abs(num);
+
+    if (is_negative == 1 && length == 0) {
+        printf("Error: negative number with no length\n");
+        return NULL;
+    }
+
+    // Counter for binary array
+    int i = 0;
+    while (num > 0) {
+        // Store remainder in binary array
+        binaryLine[i] = num % 2 + '0';
+        num = num / 2;
+        i++;
+    }
+    if ((binaryLine = realloc(binaryLine, i + 1)) == NULL) {
+        printf("Memory reallocation failed\n");
+        return NULL;
+    }
+
+    if (is_negative) {
+        // Two's complement
+        for (j = 0; j < i; j++) {
+            binaryLine[j] = (binaryLine[j] == '0') ? '1' : '0';
+        }
+        // Add 1 to the binary number
+        for (j = 0; j < 16; j++) {
+            if (binaryLine[j] == '1') {
+                binaryLine[j] = '0';
+            } else {
+                binaryLine[j] = '1';
+                break;
+            }
+        }
+    }
+
+    if (length == 0) {
+        ones = calloc(i + 1,1);
+    }
+    else
+    {
+        ones = calloc(length + 1,1);
+    }
+
+    reverse_binaryLine = calloc(i + 1,1);
+    int k = 0;
+    // Print binary array in reverse order
+    for (j = i - 1; j >= 0; j--) {
+        //printf("%d", binaryNum[j]);
+        reverse_binaryLine[k] = binaryLine[j];
+        k++;
+    }
+    reverse_binaryLine[k] = '\0';
+
+    if(is_negative == 1) {
+        for (j = 0; j < length - strlen(reverse_binaryLine); j++) {
+            ones[j] = '1';
+        }
+    }
+    if (length != 0 && is_negative == 0) {
+        for (j = 0; j < length - strlen(reverse_binaryLine); j++) {
+            ones[j] = '0';
+        }
+    }
+    strcat(ones, reverse_binaryLine);
+    free(binaryLine);
+    free(reverse_binaryLine);
+    return ones;
+}
+
 
 int findL(char *line)
 {
@@ -304,6 +382,200 @@ int search_command(char *token) {
     return -1;
 }
 
-int check_operand(char *strtok) {
-    return -1;
+int check_operand(char *token) {
+
+    if (token == NULL) {
+        return -1;
+    }
+
+    if (token[0] == '#') {
+        return 0;
+    }
+
+    if (strchr(token, '[') != NULL && strchr(token, ']') != NULL) {
+        return 2;
+    }
+
+    if (token[0] == 'r' && token[1] >= '0' && token[1] <= '7') {
+        return 3;
+    }
+
+    return 1; // label
+}
+
+
+char *to_binary (char *line) {
+    char *binary_line = malloc(16);
+    char *final = malloc(16 * 5);
+    char *token;
+    char *op1 = malloc(MAX_LINE_LENGTH);
+    char *op2 = malloc(MAX_LINE_LENGTH);
+    char *op = malloc(MAX_LINE_LENGTH);
+    char *temp = malloc(MAX_LINE_LENGTH);
+    int value;
+    int command;
+    int i, j, operands = 1;
+    symbol_list *node = symbol_table;
+
+    strcpy(temp, line);
+    token = strtok(temp, " \t");
+    command = search_command(token);
+
+    strcpy(binary_line, "0000");
+    //opcode
+    token = decimalToBinary(command,4);
+    strcat(binary_line, token);
+    //source operand
+    token = strtok(NULL, ", \t");
+    if (token == NULL) {
+        operands = 0;
+        strcat(binary_line, "0000");
+    }
+    else
+    {
+        strcpy(op1, token);
+        token = strtok(NULL, ", \t");
+        if (token == NULL) {
+            operands = 1;
+            strcat(binary_line, "00");
+            value = check_operand(op1);
+            token = decimalToBinary(value, 2);
+            strcat(binary_line, token);
+        }
+        else {
+            operands = 2;
+            strcpy(op2, token);
+            value = check_operand(op1);
+            token = decimalToBinary(value,2);
+            strcat(binary_line, token);
+            value = check_operand(op2);
+            token = decimalToBinary(value,2);
+            strcat(binary_line, token);
+        }
+    }
+    //A,R,E
+    strcat(binary_line, "00\n");
+    strcpy(final, binary_line);
+
+    //first word done, now second word
+    if (operands == 0) {
+        return final;
+    }
+
+    if (check_operand(op1) == 3 && operands == 2 && check_operand(op2) == 3) { //special
+
+    }
+    else { //not special case
+        value = check_operand(op1);
+        strcpy(op, op1);
+        if (operands == 2) {
+            j = 0;
+        }
+        if (operands == 1) {
+            j = 1;
+        }
+        for (j; j < 2; ++j) {
+            strcpy(binary_line, "");
+            switch (value) {
+                case 0: //immediate
+                    strcpy(temp, op);
+                    token = strtok(temp, "#");
+                    value = atoi(token);
+                    token = decimalToBinary(value,12);
+                    strcpy(binary_line, token);
+                    strcat(binary_line, "00\n"); /*for ARE*/
+                    strcat(final, binary_line);
+                    break;
+                case 1: /*label*/
+                    while (node != NULL) {
+                        if (strcmp(node->symbol, op) == 0) {
+                            break;
+                        }
+                        node = node->next;
+                    }
+
+                    if (node == NULL) { //not found
+                        strcpy(binary_line, op);
+                    } else {
+                        value = node->value;
+                        token = decimalToBinary(value,12);
+                        for (i = 0; i < 12 - strlen(token); ++i) {
+                            strcat(binary_line, "0");
+                        }
+                        strcat(binary_line, token);
+
+                        if (strcmp(node->identifier, "external") == 0) {
+                            strcat(binary_line, "01");
+                        } else {
+                            strcat(binary_line, "10");
+                        }
+                    }
+                    strcat(binary_line, "\n");
+                    strcat(final, binary_line);
+                    break;
+                case 2: /*index*/
+                    strcpy(temp, op);
+                    token = strtok(temp, "[");
+                    while (node != NULL) {
+                        if (strcmp(node->symbol, token) == 0) {
+                            break;
+                        }
+                        node = node->next;
+                    }
+
+                    if (node == NULL) { //not found label
+                        strcpy(binary_line, token);
+                        strcat(binary_line, "\n");
+                        strcat(final, binary_line);
+                    } else {
+                        if (strcmp(node->identifier, "external") == 0) {
+                            strcat(binary_line, "00000000000001\n");
+                        }
+                        else {
+                            value = node->value;
+                            token = decimalToBinary(value,12);
+                            strcat(binary_line, token);
+                            strcat(binary_line, "10\n");
+                        }
+                        strcat(final, binary_line);
+                    }
+                    strcpy(binary_line, "");
+
+                    //now index
+                    strcpy(temp, op);
+                    token = strtok(temp, "[");
+                    token = strtok(NULL, "]");
+                    value = atoi(token);
+                    token = decimalToBinary(value,12);
+                    strcat(binary_line, token);
+                    strcat(binary_line, "00\n");
+                    strcat(final, binary_line);
+                    break;
+                case 3: /*register*/
+                    strcpy(temp, op);
+                    token = strtok(temp, "r");
+                    value = atoi(token);
+                    strcpy(token, "");
+                    temp = decimalToBinary(value,3);
+                    strcat(token, temp);
+                    if (j == 0) { /*source register*/
+                        strcat(binary_line, "000000");
+                        strcat(binary_line, token);
+                        strcat(binary_line, "00000\n");
+                    } else { /*j==1 destination register*/
+                        strcat(binary_line, "000000000");
+                        strcat(binary_line, token);
+                        strcat(binary_line, "00\n");
+                    }
+                    strcat(final, binary_line);
+                    break;
+                default:
+                    break;
+            }
+            value = check_operand(op2);
+            strcpy(op, op2);
+        }
+
+    }
+    return final;
 }
