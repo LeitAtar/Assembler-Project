@@ -579,3 +579,122 @@ char *to_binary (char *line) {
     }
     return final;
 }
+
+int file_creator_with_identifier(char *file_name, const char *identifier) {
+    FILE *fp;
+    FILE *temp;
+    fp = fopen(file_name, "r");
+    if(fp == NULL)
+    {
+        printf("error message"); // make an error message later
+        return 1;
+    }
+    int algo_counter = 1, IC = 100, first_register = 0;
+    char *line = malloc(MAX_LINE_LENGTH);
+    char *temp_line = malloc(MAX_LINE_LENGTH);
+    char *token = malloc(MAX_LINE_LENGTH);
+    symbol_list *node = symbol_table;
+
+
+    if(strcmp(identifier, "entry") == 0)
+    {
+        strcpy(token, file_name);
+        token = strtok(token, ".");
+        strcat(token, ".ent");
+        temp = fopen(token, "w");
+        if(temp == NULL)
+        {
+            printf("error message"); // make an error message later
+            return 1;
+        }
+    }
+    else if(strcmp(identifier, ".external") == 0)
+    {
+        strcpy(token, file_name);
+        token = strtok(token, ".");
+        strcat(token, ".ext");
+        temp = fopen(token, "w");
+        if(temp == NULL)
+        {
+            printf("error message"); // make an error message later
+            return 1;
+        }
+    }
+    else
+    {
+        printf("error message"); // make an error message later
+        return 1;
+    }
+    strcpy(token, "");
+    while(algo_counter != 0)
+    {
+        switch (algo_counter)
+        {
+            case 1:
+
+                if(feof(fp))
+                {
+                    algo_counter = 0;
+                    break;
+                }
+
+                fgets(line, MAX_LINE_LENGTH, fp);
+                first_register = 0;
+
+                strcpy(temp_line, line);
+            case 2:
+                if(strstr(line, ".data") != NULL || strstr(line, ".string") != NULL || strstr(line, ".entry") != NULL
+                   || strstr(line, ".extern") != NULL || strstr(line, ".define") != NULL)
+                {
+                    algo_counter = 1;
+                    break;
+                }
+            case 3:
+                if(strstr(temp_line, ":") != NULL)
+                {
+                    token = strtok(temp_line, ":");
+                    token = strtok(NULL, " \t\n");
+                }
+                else
+                {
+                    token = strtok(temp_line, " \t ,[] # \n");
+                }
+                while(token != NULL)
+                {
+                    node = symbol_table;
+                    while(node != NULL)
+                    {
+                        if(strcmp(node->symbol, token) == 0 && strcmp(node->identifier, identifier) == 0)
+                        {
+                            fprintf(temp, "%s\t 0%d\n", node->symbol, IC);
+                            break;
+                        }
+                        node = node->next;
+                    }
+                    token = strtok(NULL, " \t ,[] # \n");
+                    if (token != NULL && token[0] == 'r' && token[1] >= '0' && token[1] <= '7')
+                    {
+                        if (first_register == 1)
+                        {
+                            IC--;
+                        }
+                        first_register = 1;
+                    }
+
+                    IC++;
+                }
+                algo_counter = 1;
+                break;
+            default:
+                printf("error message"); // make an error message later
+                return 1;
+        }
+    }
+    fclose(temp);
+    fclose(fp);
+
+    free(token);
+    free(line);
+    free(temp_line);
+    return 0;
+}

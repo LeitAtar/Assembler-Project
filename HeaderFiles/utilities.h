@@ -22,3 +22,5 @@ int check_operand(char *strtok);
 
 char *to_binary (char *line);
 
+int file_creator_with_identifier(char *file_name, const char *identifier);
+
