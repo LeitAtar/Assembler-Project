@@ -1,4 +1,4 @@
-"C:\Program Files\JetBrains\CLion 2023.3.4\bin\cmake\win\x64\bin\cmake.exe" -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - MinGW Makefiles" -S C:\Users\dean\CLionProjects\Assembler-Project -B C:\Users\dean\CLionProjects\Assembler-Project\cmake-build-debug
+"C:\Program Files\JetBrains\CLion 2023.3.4\bin\cmake\win\x64\bin\cmake.exe" -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - MinGW Makefiles" -S C:\Users\amita\CLionProjects\Assembler-Project -B C:\Users\amita\CLionProjects\Assembler-Project\cmake-build-debug
 CMake Deprecation Warning:
   Support for "Extra Generators" like
 
@@ -9,5 +9,5 @@ CMake Deprecation Warning:
 
 
 -- Configuring done (0.1s)
--- Generating done (0.1s)
--- Build files have been written to: C:/Users/dean/CLionProjects/Assembler-Project/cmake-build-debug
+-- Generating done (0.0s)
+-- Build files have been written to: C:/Users/amita/CLionProjects/Assembler-Project/cmake-build-debug

@@ -11,11 +11,19 @@ int second_pass(char *file_name)
 {
     symbol_list *node = symbol_table;
     FILE *fp;
-    fp = fopen(file_name, "r");
+    char *after_first_pass = malloc(MAX_LINE_LENGTH);
+    strcpy(after_first_pass, "temp____");
     char *line = malloc(MAX_LINE_LENGTH);
     char *temp_line = malloc(MAX_LINE_LENGTH);
     char *token = malloc(MAX_LINE_LENGTH);
     int line_counter = 0 ,i = 0, error_flag = 0, external_flag = 0, entry_flag = 0;
+    fp = fopen(after_first_pass, "r");
+
+    if(fp == NULL)
+    {
+        printf("error message\n"); // make an error message later
+        return 1;
+    }
     while(node != NULL)
     {
         if(strcmp(node->identifier, ".extern") == 0)
@@ -56,7 +64,7 @@ int second_pass(char *file_name)
         else
         {
             fclose(fp);
-            deleteLine(file_name, line_counter);
+            deleteLine(after_first_pass, line_counter);
             temp_line = calloc(14, 1);
             for (i = 0; i < 14 - strlen(decimalToBinaryOLD(node->value)); i++) {
                 temp_line[i] = '0';
@@ -70,8 +78,8 @@ int second_pass(char *file_name)
             }
             else
             {
-                insertLine(file_name, line_counter, temp_line);
-                fopen(file_name, "r");
+                insertLine(after_first_pass, line_counter, temp_line);
+                fopen(after_first_pass, "r");
                 for (i = 0; i < line_counter; ++i) {
                     fgets(line, MAX_LINE_LENGTH, fp);
                 }
@@ -92,17 +100,18 @@ int second_pass(char *file_name)
     }
     if(external_flag == 1)
     {
-        file_creator_with_identifier(file_name, "external");
+        file_creator_with_identifier(file_name, ".external");
     }
     if(entry_flag == 1)
     {
-        file_creator_with_identifier(file_name, "entry");
+        file_creator_with_identifier(file_name, ".entry");
     }
 
+
     strcpy(token, file_name);
-    token = strtok(token, ".txt");
+    token = strtok(token, ".");
     strcat(token, ".ob");
-    rename(file_name, token);
+    rename(after_first_pass, token);
     free(token);
     free(line);
     free(temp_line);
