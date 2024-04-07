@@ -92,7 +92,7 @@ int second_pass(char *file_name)
     {
         free(token);
         free(line);
-        free(temp_line);
+        //free(temp_line);
         free(node);
         free(file_name);
         //maybe delete file
@@ -114,7 +114,7 @@ int second_pass(char *file_name)
     rename(after_first_pass, token);
     free(token);
     free(line);
-    free(temp_line);
+    //free(temp_line);
     free(node);
     symbol_table = NULL;
 
