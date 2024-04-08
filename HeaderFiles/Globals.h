@@ -20,7 +20,7 @@ symbol_list *symbol_table;
 
 #define REG_COUNT 8
 
-#define WORD_LEN 14
+#define WORD_LEN 16
 
 #define ARE_BITS 2
 

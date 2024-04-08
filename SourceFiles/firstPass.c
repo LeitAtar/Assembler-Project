@@ -24,12 +24,6 @@ int exe_first_pass(char *file_name) {
 
     int algoCounter = 1, IC, DC, label_flag = 0, value = 0, error_flag = 0, L = 0, i = 0;
     char *str = malloc(MAX_LINE_LENGTH), *temp = malloc(MAX_LINE_LENGTH);
-    char *binary_line;
-    char *binary_line2;
-    char *binary_line3;
-    char *binary_line4;
-    char *binary_line5;
-    char *op1 = malloc(MAX_LINE_LENGTH), *op2 = malloc(MAX_LINE_LENGTH);
 
     symbol_table = NULL;
     symbol_list *node = NULL;
@@ -167,6 +161,7 @@ int exe_first_pass(char *file_name) {
                 else {
                     strcpy(token, temp);
                 }
+                /*converts an assembly line to binary*/
                 token = to_binary(token);
                 fprintf(machine, "%s", token);
 

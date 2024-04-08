@@ -463,7 +463,15 @@ char *to_binary (char *line) {
     }
 
     if (check_operand(op1) == 3 && operands == 2 && check_operand(op2) == 3) { //special
-
+        strcpy(binary_line, "000000");
+        value = op1[1] - '0';
+        token = decimalToBinary(value,3);
+        strcat(binary_line, token);
+        value = op2[1] - '0';
+        token = decimalToBinary(value,3);
+        strcat(binary_line, token);
+        strcat(binary_line, "00\n");
+        strcat(final, binary_line);
     }
     else { //not special case
         value = check_operand(op1);
@@ -697,4 +705,61 @@ int file_creator_with_identifier(char *file_name, const char *identifier) {
     free(line);
     free(temp_line);
     return 0;
+}
+
+char* data_to_binary (char* line) {
+    char binary_line[16];
+    char* final = malloc(BIG_NUMBER_CONST);
+    char* token = malloc(MAX_LINE_LENGTH);
+    char* temp = malloc(MAX_LINE_LENGTH);
+    int value;
+
+    strcpy(final, "");
+    strcpy(temp, line);
+    token = strtok(temp, " \t , \n");
+
+    if (token == NULL) {
+        printf("Error: data is empty\n");
+        return NULL;
+    }
+    while (token != NULL) {
+        value = atoi(token);
+        if (value == 0) {
+            printf("Error: data value is 0\n");
+            return NULL;
+        }
+        token = decimalToBinary(value, 14);
+        strcpy(binary_line, token);
+        strcat(binary_line, "\n");
+        strcat(final, binary_line);
+        token = strtok(NULL, " \t , \n");
+    }
+    return final;
+}
+
+char* string_to_binary (char* line) {
+    char binary_line[WORD_LEN];
+    char* final = malloc(BIG_NUMBER_CONST);
+    char* token = malloc(MAX_LINE_LENGTH);
+    char* temp = malloc(MAX_LINE_LENGTH);
+    int i = 0;
+
+    strcpy(final, "");
+
+    strcpy(temp, line);
+    token = strtok(temp, " \t , \n");
+    if (token == NULL) {
+        printf("Error: string is empty\n");
+        return NULL;
+    }
+
+    for (i = 3; i < strlen(token) - 3; i++) {
+        strcpy(binary_line, "");
+        temp = decimalToBinary(token[i], 14);
+        strcat(binary_line, temp);
+        strcat(binary_line, "\n");
+        strcat(final, binary_line);
+    }
+    strcat(final, "00000000000000\n");
+    return final;
 }
