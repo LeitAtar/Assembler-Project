@@ -24,3 +24,7 @@ char *to_binary (char *line);
 
 int file_creator_with_identifier(char *file_name, const char *identifier);
 
+char* data_to_binary (char* line);
+
+char* string_to_binary (char* line);
+

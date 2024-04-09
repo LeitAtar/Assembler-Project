@@ -404,6 +404,7 @@ int check_operand(char *token) {
 }
 
 
+
 char *to_binary (char *line) {
     char *binary_line = malloc(16);
     char *final = malloc(16 * 5);
@@ -487,8 +488,22 @@ char *to_binary (char *line) {
             switch (value) {
                 case 0: //immediate
                     strcpy(temp, op);
-                    token = strtok(temp, "#");
+                    token = strtok(temp, "#\n");
                     value = atoi(token);
+                    if (value == 0) {
+                        node = symbol_table;
+                        while (node != NULL) {
+                            if (strcmp(node->symbol, token) == 0 && strcmp(node->identifier, ".mdefine") == 0) {
+                                break;
+                            }
+                            node = node->next;
+                        }
+                        if (node == NULL) {
+                            printf("Error: label not found\n");
+                            return NULL;
+                        }
+                        value = node->value;
+                    }
                     token = decimalToBinary(value,12);
                     strcpy(binary_line, token);
                     strcat(binary_line, "00\n"); /*for ARE*/
@@ -504,7 +519,8 @@ char *to_binary (char *line) {
 
                     if (node == NULL) { //not found
                         strcpy(binary_line, op);
-                    } else {
+                    }
+                    else {
                         value = node->value;
                         token = decimalToBinary(value,12);
                         for (i = 0; i < 12 - strlen(token); ++i) {
@@ -512,7 +528,7 @@ char *to_binary (char *line) {
                         }
                         strcat(binary_line, token);
 
-                        if (strcmp(node->identifier, "external") == 0) {
+                        if (strcmp(node->identifier, ".external") == 0) {
                             strcat(binary_line, "01");
                         } else {
                             strcat(binary_line, "10");
@@ -531,12 +547,13 @@ char *to_binary (char *line) {
                         node = node->next;
                     }
 
-                    if (node == NULL) { //not found label
+                    if (node == NULL || node->value == -1) { //not found label or no finished value
                         strcpy(binary_line, token);
                         strcat(binary_line, "\n");
                         strcat(final, binary_line);
-                    } else {
-                        if (strcmp(node->identifier, "external") == 0) {
+                    }
+                    else {
+                        if (strcmp(node->identifier, ".external") == 0) {
                             strcat(binary_line, "00000000000001\n");
                         }
                         else {
@@ -554,6 +571,19 @@ char *to_binary (char *line) {
                     token = strtok(temp, "[");
                     token = strtok(NULL, "]");
                     value = atoi(token);
+                    if (value == 0) {
+                        while (node != NULL) {
+                            if (strcmp(node->symbol, token) == 0 && strcmp(node->identifier, ".mdefine") == 0) {
+                                break;
+                            }
+                            node = node->next;
+                        }
+                        if (node == NULL) {
+                            printf("Error: label not found\n");
+                            return NULL;
+                        }
+                        value = node->value;
+                    }
                     token = decimalToBinary(value,12);
                     strcat(binary_line, token);
                     strcat(binary_line, "00\n");
@@ -711,12 +741,14 @@ int file_creator_with_identifier(char *file_name, const char *identifier) {
     return 0;
 }
 
+
 char* data_to_binary (char* line) {
     char binary_line[16];
-    char* final = malloc(BIG_NUMBER_CONST);
-    char* token = malloc(MAX_LINE_LENGTH);
-    char* temp = malloc(MAX_LINE_LENGTH);
+    char* final = malloc(1000);
+    char* token = malloc(16);
+    char* temp = malloc(16);
     int value;
+    symbol_list* node;
 
     strcpy(final, "");
     strcpy(temp, line);
@@ -728,9 +760,20 @@ char* data_to_binary (char* line) {
     }
     while (token != NULL) {
         value = atoi(token);
+
         if (value == 0) {
-            printf("Error: data value is 0\n");
-            return NULL;
+            node = symbol_table;
+            while (node != NULL) {
+                if (strcmp(node->symbol, token) == 0 && strcmp(node->identifier, ".mdefine") == 0) {
+                    value = node->value;
+                    break;
+                }
+                node = node->next;
+            }
+            if (node == NULL) {
+                printf("Error: data not found\n");
+                return NULL;
+            }
         }
         token = decimalToBinary(value, 14);
         strcpy(binary_line, token);
@@ -742,10 +785,10 @@ char* data_to_binary (char* line) {
 }
 
 char* string_to_binary (char* line) {
-    char binary_line[WORD_LEN];
-    char* final = malloc(BIG_NUMBER_CONST);
-    char* token = malloc(MAX_LINE_LENGTH);
-    char* temp = malloc(MAX_LINE_LENGTH);
+    char binary_line[16];
+    char* final = malloc(1000);
+    char* token = malloc(200);
+    char* temp = malloc(200);
     int i = 0;
 
     strcpy(final, "");
