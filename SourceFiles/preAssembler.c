@@ -7,7 +7,7 @@
 #include "../HeaderFiles/secondPass.h"
 #include "../HeaderFiles/utilities.h"
 
-int pre_assemble(char *file_name) {
+int exe_pre_assembler(char *file_name) {
     FILE *fp, *fp2;
     char *token = malloc(MAX_LINE_LENGTH);
     int line_counter = 0, is_mcr = 0, error_flag = 0, i;

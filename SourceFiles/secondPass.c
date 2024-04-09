@@ -7,7 +7,7 @@
 #include "../HeaderFiles/secondPass.h"
 #include "../HeaderFiles/utilities.h"
 
-int second_pass(char *file_name)
+int exe_second_pass(char *file_name)
 {
     symbol_list *node = symbol_table;
     FILE *fp;
