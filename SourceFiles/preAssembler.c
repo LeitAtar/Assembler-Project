@@ -128,6 +128,18 @@ int pre_assemble(char *file_name) {
                 printf("error message"); /*insert error message here*/
         }
     }
+    fclose(fp);
+    fclose(fp2);
+    free(token);
+    free(mcro_name);
+    free(line);
+    free(temp_line);
+    free(node);
+
+    if (error_flag == 1)
+    {
+        return 1;
+    }
     return 0;
 }
 
