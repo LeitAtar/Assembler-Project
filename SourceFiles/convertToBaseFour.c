@@ -1,46 +1,49 @@
+#include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include <stdlib.h>  // Include <stdlib.h> for malloc
+#include "../HeaderFiles/DataStructures.h"
+#include "../HeaderFiles/Globals.h"
+#include "../HeaderFiles/tables.h"
+#include "../HeaderFiles/firstPass.h"
+#include "../HeaderFiles/utilities.h"
+#include "../HeaderFiles/secondPass.h"
+#include "../HeaderFiles/preAssembler.h"
+#include "../HeaderFiles/convertToBaseFour.h"
+
 
 #define BASE_TWO_WORD 16 // Adjusted to accommodate null terminator and \n
 #define BASE_FOUR_WORD 8  // Adjusted to accommodate null terminator
 
-char* convertToBaseFour(const char str[BASE_TWO_WORD]);
-void encrypt(FILE *fp);
 
-int main() {
-
-    FILE *fp = fopen("MachineCode.txt", "r");
-    encrypt(fp);
-
-    return 0;
-}
-
-
-void encrypt(FILE *fp) {
+int encrypt(char *file_name) {
+    FILE *fp = fopen(file_name, "r");
     FILE *final;
-    final = fopen("encrypted.txt", "w");
+    final = fopen("temp____", "w");
     char currentNum[BASE_TWO_WORD];
-    char *baseFourNum;
+    char *baseFourNum = malloc(BASE_FOUR_WORD);
 
     if (fp == NULL) {
         printf("Error opening file.\n");
         fclose(final);
-        return;
+        return 1;
     }
 
     while(fgets(currentNum, BASE_TWO_WORD, fp) != NULL) {
         baseFourNum = convertToBaseFour(currentNum);
         fprintf(final, "%s\n",baseFourNum);  // Corrected format specifier and added newline
-        free(baseFourNum);  // Free memory allocated for baseFourNum
     }
 
     fclose(fp);
     fclose(final);
+    remove(file_name);
+    rename("temp____", file_name);
+    free(baseFourNum);
+
+    return 0;
 
 }
 
-char* convertToBaseFour(const char str[BASE_TWO_WORD]) {
+char* convertToBaseFour(const char *str) {
     int i = 0;
     int j = 0;
     char *newStr = malloc(BASE_FOUR_WORD);  // Allocate memory for the string

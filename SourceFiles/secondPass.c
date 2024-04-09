@@ -4,13 +4,16 @@
 #include "../HeaderFiles/DataStructures.h"
 #include "../HeaderFiles/Globals.h"
 #include "../HeaderFiles/tables.h"
-#include "../HeaderFiles/secondPass.h"
+#include "../HeaderFiles/firstPass.h"
 #include "../HeaderFiles/utilities.h"
+#include "../HeaderFiles/secondPass.h"
+#include "../HeaderFiles/preAssembler.h"
+#include "../HeaderFiles/convertToBaseFour.h"
 
-int exe_second_pass(char *file_name)
+int exe_second_pass(char *file_name, int IC, int DC) //symbol_list **symbol_table
 {
     symbol_list *node = symbol_table;
-    FILE *fp;
+    FILE *fp, *machine;
     char *after_first_pass = malloc(MAX_LINE_LENGTH);
     strcpy(after_first_pass, "temp____");
     char *line = malloc(MAX_LINE_LENGTH);
@@ -18,19 +21,23 @@ int exe_second_pass(char *file_name)
     char *token = malloc(MAX_LINE_LENGTH);
     int line_counter = 0 ,i = 0, error_flag = 0, external_flag = 0, entry_flag = 0;
     fp = fopen(after_first_pass, "r");
+    strcpy(token, file_name);
+    strcat(token, ".ob");
+    machine = fopen(token, "w");
 
-    if(fp == NULL)
+    if(fp == NULL || machine == NULL)
     {
-        printf("error message\n"); // make an error message later
+        printf("failed to open file\n"); // make an error message later
         return 1;
     }
+    node = symbol_table;
     while(node != NULL)
     {
-        if(strcmp(node->identifier, ".extern") == 0)
+        if(strcmp(node->identifier, ".external") == 0)
         {
             external_flag = 1;
         }
-        if(strcmp(node->identifier, ".entry") == 0)
+        if(node->is_entry == 1)
         {
             entry_flag = 1;
         }
@@ -39,13 +46,19 @@ int exe_second_pass(char *file_name)
     while(!feof(fp))
     {
         fgets(line, MAX_LINE_LENGTH, fp);
+        if (feof(fp))
+        {
+            continue;
+        }
         line_counter++;
         strcpy(temp_line, line);
         node = symbol_table;
         if(temp_line[0] == '1' || temp_line[0] == '0')
         {
+            fprintf(machine, "%s", line);
             continue;
         }
+        node = symbol_table;
         while(node != NULL)
         {
             strcpy(token, node->symbol);
@@ -63,14 +76,16 @@ int exe_second_pass(char *file_name)
         }
         else
         {
-            fclose(fp);
-            deleteLine(after_first_pass, line_counter);
-            temp_line = calloc(14, 1);
-            for (i = 0; i < 14 - strlen(decimalToBinaryOLD(node->value)); i++) {
-                temp_line[i] = '0';
+
+            if (strcmp(node->identifier, ".external") == 0)
+            {
+                strcpy(temp_line, "00000000000001\n");
             }
-            strcat(temp_line, decimalToBinaryOLD(node->value));
-            strcat(temp_line, "\n");
+            else
+            {
+                temp_line = decimalToBinary(node->value, 12);
+                strcat(temp_line, "10\n");
+            }
             if(temp_line == NULL)
             {
                 error_flag = 1;
@@ -78,16 +93,58 @@ int exe_second_pass(char *file_name)
             }
             else
             {
-                insertLine(after_first_pass, line_counter, temp_line);
-                fopen(after_first_pass, "r");
-                for (i = 0; i < line_counter; ++i) {
-                    fgets(line, MAX_LINE_LENGTH, fp);
-                }
+                fprintf(machine, "%s", temp_line);
             }
         }
     }
 
     fclose(fp);
+    fclose(machine);
+    remove("temp____");
+    strcpy(token, file_name);
+    strcat(token, ".ob");
+    encrypt(token);
+
+    /*add numbers and ic dc*/
+    machine = fopen("temp____", "w");
+    fp = fopen(token, "r");
+    if (fp == NULL || machine == NULL)
+    {
+        printf("failed to open file\n"); // make an error message later
+        return 1;
+    }
+    strcpy(token, "\t");
+    sprintf(temp_line, "%d", IC);
+    strcat(token, temp_line);
+    strcat(token, "\t");
+    sprintf(temp_line, "%d", DC);
+    strcat(token, temp_line);
+    strcat(token, "\n");
+    fprintf(machine, "%s", token);
+
+    line_counter = 0;
+    while (!feof(fp)) {
+        strcpy(token, "0");
+        sprintf(temp_line, "%d", 100 + line_counter);
+        strcat(token, temp_line);
+        strcat(token, "\t");
+        fgets(line, MAX_LINE_LENGTH, fp);
+        if (feof(fp)) {
+            continue;
+        }
+        strcat(token, line);
+        fprintf(machine, "%s", token);
+        line_counter++;
+    }
+
+    fclose(fp);
+    fclose(machine);
+    strcpy(token, file_name);
+    strcat(token, ".ob");
+    remove(token);
+    rename("temp____", token);
+
+
     if (error_flag == 1)
     {
         free(token);
@@ -96,27 +153,37 @@ int exe_second_pass(char *file_name)
         free(node);
         free(file_name);
         //maybe delete file
+        printf("failed second assembly pass\n");
         return 1;
     }
     if(external_flag == 1)
     {
-        file_creator_with_identifier(file_name, ".external");
+        ext_file_creator(file_name);
     }
     if(entry_flag == 1)
     {
-        file_creator_with_identifier(file_name, ".entry");
+        strcpy(token, file_name);
+        strcat(token, ".ent");
+        fp = fopen(token, "w");
+
+        node = symbol_table;
+        while (node != NULL)
+        {
+            if (node->is_entry == 1)
+            {
+                fprintf(fp, "%s\t%d\n", node->symbol, node->value);
+            }
+            node = node->next;
+        }
+        fclose(fp);
     }
 
-
-    strcpy(token, file_name);
-    token = strtok(token, ".");
-    strcat(token, ".ob");
-    rename(after_first_pass, token);
     free(token);
     free(line);
-    //free(temp_line);
+    free(temp_line);
     free(node);
     symbol_table = NULL;
+
 
     return 0;
 }

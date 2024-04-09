@@ -6,6 +6,9 @@
 #include "../HeaderFiles/tables.h"
 #include "../HeaderFiles/firstPass.h"
 #include "../HeaderFiles/utilities.h"
+#include "../HeaderFiles/secondPass.h"
+#include "../HeaderFiles/preAssembler.h"
+#include "../HeaderFiles/convertToBaseFour.h"
 
 symbol_list *symbol_table = NULL;
 
@@ -40,6 +43,12 @@ int exe_first_pass(char *file_name) {
 
                 fgets(str, MAX_LINE_LENGTH, fp);
                 label_flag = 0; //reset
+                strcpy(temp, str); //copy the string to temp
+                token = strtok(temp, " \t\n");
+                if (str[0] == ';' || token == NULL) { //if comment or empty line
+                    algoCounter = 2;
+                    break;
+                }
 
             case 3:
                 strcpy(temp, str); //copy the string to temp
@@ -47,6 +56,7 @@ int exe_first_pass(char *file_name) {
                 if (strcmp(token, ".define") != 0) { //if not define statement move to 5
                     if (strcasecmp(token, ".define") == 0) { //wrong define definition
                         error_flag = 1;
+                        printf("wrong define definition\n");
                     }
                     algoCounter = 5;
                     break;
@@ -56,10 +66,12 @@ int exe_first_pass(char *file_name) {
                 value = atoi(strtok(NULL, "= \t"));
                 if (value == 0) { //failed to read the value
                     error_flag = 1;
+                    printf("failed to read the value\n");
                 }
-                value = insertToSymbolTable(&symbol_table, token, value, ".mdefine");
+                value = insertToSymbolTable(&symbol_table, token, value, ".mdefine", 0);
                 if (value == 1) { //failed to insert symbol
                     error_flag = 1;
+                    printf("failed to insert symbol\n");
                 }
 
                 algoCounter = 2;
@@ -77,6 +89,7 @@ int exe_first_pass(char *file_name) {
                 if (strlen(token) > MAX_LABEL_LENGTH
                     || strchr(token, ' ') != NULL) { //wrong label definition
                     error_flag = 1;
+                    printf("wrong label definition\n");
                 }
 
             case 6: //done
@@ -93,6 +106,7 @@ int exe_first_pass(char *file_name) {
                     if (strcasecmp(token, ".data") == 0
                         || strcasecmp(token, ".string") == 0) { //wrong data or string
                         error_flag = 1;
+                        printf("wrong data or string\n");
                     }
                     algoCounter = 10;
                     break;
@@ -102,9 +116,10 @@ int exe_first_pass(char *file_name) {
                 token = strtok(temp, ":"); //reset token
                 if (label_flag == 1) { //label
                     if (strcmp(strtok(NULL, " \t"), ".entry") != 0) { //not .entry
-                        value = insertToSymbolTable(&symbol_table, token, DC, ".data");
+                        value = insertToSymbolTable(&symbol_table, token, DC, ".data", 0);
                         if (value == 1) { //failed to insert label
                             error_flag = 1;
+                            printf("failed to insert label\n");
                         }
                     } else {
                         printf("entry label warning\n");
@@ -119,20 +134,28 @@ int exe_first_pass(char *file_name) {
                 }
 
                 if (strcasecmp(token, ".data") == 0) {
-                    token = strtok(NULL, " \t");
+                    token = strtok(NULL, "\n");
                     token = data_to_binary(token);
                     fprintf(machine, "%s", token);
+                    strcpy(temp, str);
+                    token = strtok(temp, ".");
+                    token = strtok(NULL, " \t");
+                    token = strtok(NULL, " \t");
 
                     while (token != NULL) {
                         DC++;
-                        token = strtok(NULL, ",");
+                        token = strtok(NULL, ",\n");
                     }
                 }
                 else if (strcasecmp(token, ".string") == 0) {
                     token = strtok(NULL, " \t");
                     token = string_to_binary(token);
                     fprintf(machine, "%s", token);
-                    DC += (int) strlen(token) - 2;
+                    strcpy(temp, str);
+                    token = strtok(temp, ".");
+                    token = strtok(NULL, " \t\n");
+                    token = strtok(NULL, " \t\n");
+                    DC += (int) strlen(token) - 5;
                 }
                 else {
                     error_flag = 1;
@@ -151,22 +174,25 @@ int exe_first_pass(char *file_name) {
                 token = strtok(NULL, ", \n \t");
                 if (strstr(str, ".extern") != NULL) { //if its extern command
                     while (token != NULL) {
-                        if (insertToSymbolTable(&symbol_table, token, 0, ".external") == 1) { //failed to insert label
+                        if (insertToSymbolTable(&symbol_table, token, 0, ".external", 0) == 1) { //failed to insert label
                             error_flag = 1;
+                            printf("failed to insert label\n");
                         }
                         token = strtok(NULL, ", \n \t");
                     }
                 }
                 else if (strstr(str, ".entry") != NULL) { //if its entry command
                     while (token != NULL) {
-                        if (insertToSymbolTable(&symbol_table, token, -1, ".entry") == 1) { //failed to insert label
+                        if (insertToSymbolTable(&symbol_table, token, -1, ".entry", 1) == 1) { //failed to insert label
                             error_flag = 1;
+                            printf("failed to insert label\n");
                         }
                         token = strtok(NULL, ", \n \t");
                     }
                 }
                 else {
                     error_flag = 1;
+                    printf("error message case 11\n");
                 }
                 algoCounter = 2;
                 break;
@@ -174,20 +200,22 @@ int exe_first_pass(char *file_name) {
                 if (label_flag == 1) {
                     strcpy(temp, str); //copy the string to temp
                     token = strtok(temp, ":"); //label name
-                    if (insertToSymbolTable(&symbol_table, token, IC + 100, ".code") == 1) { //failed to insert label
+                    if (insertToSymbolTable(&symbol_table, token, IC + 100, ".code", 0) == 1) { //failed to insert label
                         error_flag = 1;
+                        printf("failed to insert label\n");
                     }
                 }
 
             case 13:
                 strcpy(temp, str); //copy the string to temp
-                token = strtok(temp, " \t");
+                token = strtok(temp, " \t\n");
                 if (strstr(token, ":") != NULL) { //if there's a label
-                    token = strtok(NULL, " \t");
+                    token = strtok(NULL, " \t\n");
                 }
                 value = search_command(token);
                 if (value == -1) { //not a command
                     error_flag = 1;
+                    printf("not a command\n");
                 }
             case 14:
                 strcpy(temp, str); //copy the string to temp
@@ -202,6 +230,7 @@ int exe_first_pass(char *file_name) {
                 L = findL(token);
                 if (L == -1) { //failed to find L
                     error_flag = 1;
+                    printf("failed to find L\n");
                 }
 
                 strcpy(temp, str); //copy the string to temp
@@ -217,7 +246,7 @@ int exe_first_pass(char *file_name) {
                 token = to_binary(token);
                 if (token == NULL) {
                     error_flag = 1;
-                    printf("failed to machinise command: %s\n", temp);
+                    printf("failed to machinise command: %s\n", str);
                 }
                 fprintf(machine, "%s", token);
 
@@ -245,6 +274,13 @@ int exe_first_pass(char *file_name) {
                 return 1;
         }
     }
+    fclose(fp);
+    fclose(machine);
+    free(str);
+    free(temp);
+
+
+    exe_second_pass(file_name, IC, DC);
 
     if (error_flag == 1) {
         return 1;

@@ -4,7 +4,13 @@
 #include "../HeaderFiles/DataStructures.h"
 #include "../HeaderFiles/Globals.h"
 #include "../HeaderFiles/tables.h"
+#include "../HeaderFiles/firstPass.h"
+#include "../HeaderFiles/utilities.h"
 #include "../HeaderFiles/secondPass.h"
+#include "../HeaderFiles/preAssembler.h"
+#include "../HeaderFiles/convertToBaseFour.h"
+
+extern symbol_list *symbol_table;
 
 char* decimalToBinaryOLD(int num) {
     // Array to store binary number
@@ -67,7 +73,7 @@ char* decimalToBinaryOLD(int num) {
 }
 
 char* decimalToBinary(int num, int length) {
-    // Array to store binary number
+    /*Array to store binary number*/
     char *binaryLine = calloc(14,1);
     char *reverse_binaryLine;
     char *ones;
@@ -80,7 +86,7 @@ char* decimalToBinary(int num, int length) {
         return NULL;
     }
 
-    // Counter for binary array
+    /*Counter for binary array*/
     int i = 0;
     while (num > 0) {
         // Store remainder in binary array
@@ -94,11 +100,11 @@ char* decimalToBinary(int num, int length) {
     }
 
     if (is_negative) {
-        // Two's complement
+        /* Two's complement*/
         for (j = 0; j < i; j++) {
             binaryLine[j] = (binaryLine[j] == '0') ? '1' : '0';
         }
-        // Add 1 to the binary number
+        /*Add 1 to the binary number*/
         for (j = 0; j < 16; j++) {
             if (binaryLine[j] == '1') {
                 binaryLine[j] = '0';
@@ -119,7 +125,7 @@ char* decimalToBinary(int num, int length) {
 
     reverse_binaryLine = calloc(i + 1,1);
     int k = 0;
-    // Print binary array in reverse order
+    /* Print binary array in reverse order*/
     for (j = i - 1; j >= 0; j--) {
         //printf("%d", binaryNum[j]);
         reverse_binaryLine[k] = binaryLine[j];
@@ -510,6 +516,7 @@ char *to_binary (char *line) {
                     strcat(final, binary_line);
                     break;
                 case 1: /*label*/
+                    node = symbol_table;
                     while (node != NULL) {
                         if (strcmp(node->symbol, op) == 0) {
                             break;
@@ -540,6 +547,7 @@ char *to_binary (char *line) {
                 case 2: /*index*/
                     strcpy(temp, op);
                     token = strtok(temp, "[");
+                    node = symbol_table;
                     while (node != NULL) {
                         if (strcmp(node->symbol, token) == 0) {
                             break;
@@ -572,6 +580,7 @@ char *to_binary (char *line) {
                     token = strtok(NULL, "]");
                     value = atoi(token);
                     if (value == 0) {
+                        node = symbol_table;
                         while (node != NULL) {
                             if (strcmp(node->symbol, token) == 0 && strcmp(node->identifier, ".mdefine") == 0) {
                                 break;
@@ -618,7 +627,7 @@ char *to_binary (char *line) {
     return final;
 }
 
-int file_creator_with_identifier(char *file_name, const char *identifier) {
+int ext_file_creator(char *file_name) {
     FILE *fp;
     FILE *temp;
     char *token = malloc(MAX_LINE_LENGTH);
@@ -637,32 +646,12 @@ int file_creator_with_identifier(char *file_name, const char *identifier) {
 
     strcpy(token, "");
 
+    strcpy(token, file_name);
+    token = strtok(token, ".");
+    strcat(token, ".ext");
+    temp = fopen(token, "w");
 
-    if(strcmp(identifier, ".entry") == 0)
-    {
-        strcpy(token, file_name);
-        token = strtok(token, ".");
-        strcat(token, ".ent");
-        temp = fopen(token, "w");
-        if(temp == NULL)
-        {
-            printf("error message"); // make an error message later
-            return 1;
-        }
-    }
-    else if(strcmp(identifier, ".external") == 0)
-    {
-        strcpy(token, file_name);
-        token = strtok(token, ".");
-        strcat(token, ".ext");
-        temp = fopen(token, "w");
-        if(temp == NULL)
-        {
-            printf("error message"); // make an error message later
-            return 1;
-        }
-    }
-    else
+    if(temp == NULL)
     {
         printf("error message"); // make an error message later
         return 1;
@@ -683,14 +672,17 @@ int file_creator_with_identifier(char *file_name, const char *identifier) {
                 fgets(line, MAX_LINE_LENGTH, fp);
                 first_register = 0;
 
-                strcpy(temp_line, line);
             case 2:
+                strcpy(temp_line, line);
+                token = strtok(temp_line, " \t\n");
+
                 if(strstr(line, ".data") != NULL || strstr(line, ".string") != NULL || strstr(line, ".entry") != NULL
-                   || strstr(line, ".external") != NULL || strstr(line, ".define") != NULL)
+                   || strstr(line, ".extern") != NULL || strstr(line, ".define") != NULL || line[0] == ';' || token == NULL)
                 {
                     algo_counter = 1;
                     break;
                 }
+                strcpy(temp_line, line);
             case 3:
                 if(strstr(temp_line, ":") != NULL)
                 {
@@ -706,7 +698,7 @@ int file_creator_with_identifier(char *file_name, const char *identifier) {
                     node = symbol_table;
                     while(node != NULL)
                     {
-                        if(strcmp(node->symbol, token) == 0 && strcmp(node->identifier, identifier) == 0)
+                        if(strcmp(node->symbol, token) == 0 && strcmp(node->identifier, ".external") == 0)
                         {
                             fprintf(temp, "%s\t 0%d\n", node->symbol, IC);
                             break;
@@ -734,10 +726,8 @@ int file_creator_with_identifier(char *file_name, const char *identifier) {
     }
     fclose(temp);
     fclose(fp);
-
     free(token);
     free(line);
-    free(temp_line);
     return 0;
 }
 

@@ -15,7 +15,8 @@ typedef struct macro_list { //for macros
 typedef struct symbol_list {
     char *symbol;
     int value;
-    const char *identifier;
+    char *identifier;
+    int is_entry;
     struct symbol_list *next;
 } symbol_list;
 

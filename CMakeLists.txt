@@ -18,4 +18,5 @@ add_executable(AssemblerPersonal SourceFiles/main.c
         SourceFiles/utilities.c
         SourceFiles/utilities.c
         HeaderFiles/utilities.h
-        HeaderFiles/firstPass.h)
+        HeaderFiles/firstPass.h
+        HeaderFiles/convertToBaseFour.h)

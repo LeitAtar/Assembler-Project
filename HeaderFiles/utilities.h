@@ -22,7 +22,7 @@ int check_operand(char *strtok);
 
 char *to_binary (char *line);
 
-int file_creator_with_identifier(char *file_name, const char *identifier);
+int ext_file_creator(char *file_name);
 
 char* data_to_binary (char* line);
 
