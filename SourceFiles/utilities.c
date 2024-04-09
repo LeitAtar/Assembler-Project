@@ -591,7 +591,10 @@ char *to_binary (char *line) {
 int file_creator_with_identifier(char *file_name, const char *identifier) {
     FILE *fp;
     FILE *temp;
-    fp = fopen(file_name, "r");
+    char *token = malloc(MAX_LINE_LENGTH);
+    strcpy(token, file_name);
+    strcat(token, ".am");
+    fp = fopen(token, "r");
     if(fp == NULL)
     {
         printf("error message"); // make an error message later
@@ -600,11 +603,12 @@ int file_creator_with_identifier(char *file_name, const char *identifier) {
     int algo_counter = 1, IC = 100, first_register = 0;
     char *line = malloc(MAX_LINE_LENGTH);
     char *temp_line = malloc(MAX_LINE_LENGTH);
-    char *token = malloc(MAX_LINE_LENGTH);
     symbol_list *node = symbol_table;
 
+    strcpy(token, "");
 
-    if(strcmp(identifier, "entry") == 0)
+
+    if(strcmp(identifier, ".entry") == 0)
     {
         strcpy(token, file_name);
         token = strtok(token, ".");
@@ -652,7 +656,7 @@ int file_creator_with_identifier(char *file_name, const char *identifier) {
                 strcpy(temp_line, line);
             case 2:
                 if(strstr(line, ".data") != NULL || strstr(line, ".string") != NULL || strstr(line, ".entry") != NULL
-                   || strstr(line, ".extern") != NULL || strstr(line, ".define") != NULL)
+                   || strstr(line, ".external") != NULL || strstr(line, ".define") != NULL)
                 {
                     algo_counter = 1;
                     break;
