@@ -8,7 +8,7 @@ add_executable(AssemblerPersonal SourceFiles/main.c
         SourceFiles/firstPass.c
         SourceFiles/DataStructures.c
         HeaderFiles/DataStructures.h
-        HeaderFiles/Globals.h
+        HeaderFiles/globals.h
         SourceFiles/tables.c
         HeaderFiles/tables.h
         SourceFiles/preAssembler.c
@@ -19,4 +19,6 @@ add_executable(AssemblerPersonal SourceFiles/main.c
         SourceFiles/utilities.c
         HeaderFiles/utilities.h
         HeaderFiles/firstPass.h
-        HeaderFiles/convertToBaseFour.h)
+        HeaderFiles/convertToBaseFour.h
+        SourceFiles/Errors.c
+        HeaderFiles/Errors.h)

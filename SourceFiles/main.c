@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "../HeaderFiles/DataStructures.h"
-#include "../HeaderFiles/Globals.h"
+#include "../HeaderFiles/globals.h"
 #include "../HeaderFiles/tables.h"
 #include "../HeaderFiles/firstPass.h"
 #include "../HeaderFiles/utilities.h"
