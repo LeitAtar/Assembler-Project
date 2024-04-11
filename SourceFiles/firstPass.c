@@ -278,13 +278,9 @@ int exe_first_pass(char *file_name) {
     fclose(machine);
     free(str);
     free(temp);
-
-
     exe_second_pass(file_name, IC, DC);
-
     if (error_flag == 1) {
         return 1;
     }
-
     return 0;
 }

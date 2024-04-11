@@ -9,14 +9,17 @@
 
 int exe_pre_assembler(char *file_name) {
     FILE *fp, *fp2;
-    char *token = malloc(MAX_LINE_LENGTH);
+    char *token;
     int line_counter = 0, is_mcr = 0, error_flag = 0, i;
-    char *mcro_name = malloc(MAX_LINE_LENGTH), *line = malloc(MAX_LINE_LENGTH), *temp_line = malloc(MAX_LINE_LENGTH);
+    char *mcro_name = malloc(MAX_LINE_LENGTH), *line = malloc(MAX_LINE_LENGTH), *temp_line = calloc(MAX_LINE_LENGTH, sizeof(char));
     macro_list *table = NULL;
     macro_list *node = NULL;
-
     fp = fopen(file_name, "r");
-    fp2 = fopen("___temp", "w");
+    strcpy(temp_line, file_name);
+    token = strtok(temp_line, ".");
+    strcat(token, ".am");
+    fp2 = fopen(token, "w");
+
     int algo_counter = 1;
     while(algo_counter != 0)
     {
@@ -33,20 +36,14 @@ int exe_pre_assembler(char *file_name) {
                 token = strtok(temp_line," \t");
                 node = isInMacroTable(table,token);
                 if(node != NULL) {
-                    fclose(fp);
-                    deleteLine(file_name, line_counter--);
-                    insertLine(file_name, line_counter+1, node->content);
+
+                    fprintf(fp2, "%s", node->content);
                     line_counter += node->line_amount;
-                    fopen(file_name, "r");
-                    for(i = 0; i < line_counter; i++)
-                    {
-                        fgets(line, MAX_LINE_LENGTH, fp);
-                    }
+
                     algo_counter = 1;
                     break;
                 }
             case 3:
-                //token = strtok(temp_line," \t");
                 if(strcmp(token, "mcr") != 0)
                 {
                     algo_counter = 6;
@@ -55,9 +52,7 @@ int exe_pre_assembler(char *file_name) {
             case 4:
                 is_mcr = 1;
             case 5:
-                //token = strtok(temp_line, " \t");
                 strcpy(mcro_name, strtok(NULL, " \t"));
-
                 if (isInMacroTable(table, mcro_name) != NULL) {
                     error_flag = 1;
                     printf("macro already exists\n");
@@ -70,26 +65,12 @@ int exe_pre_assembler(char *file_name) {
                 token = strtok(temp_line, " \t");
                 if(strcmp(token, "mcr") == 0)
                 {
-                    fclose(fp);
-                    deleteLine(file_name, line_counter--);
-                    fopen(file_name, "r");
-                    for(i = 0; i < line_counter; i++)
-                    {
-                        fgets(line, MAX_LINE_LENGTH, fp);
-                    }
                     algo_counter = 1;
                     break;
                 }
                 else if(is_mcr == 1 && strstr(line, "endmcr") == NULL)
                 {
-                    fclose(fp);
                     insertToMacroTable(&table, mcro_name, line);
-                    deleteLine(file_name, line_counter--);
-                    fopen(file_name, "r");
-                    for(i = 0; i < line_counter; i++)
-                    {
-                        fgets(line, MAX_LINE_LENGTH, fp);
-                    }
                     algo_counter = 1;
                     break;
                 }
@@ -99,21 +80,13 @@ int exe_pre_assembler(char *file_name) {
                 }
                 else
                 {
+                    fprintf(fp2, "%s", line);
                     algo_counter = 1;
                     break;
                 }
             case 7:
-                if(strstr(line, "endmcr") != NULL) {
-                    fclose(fp);
-                    deleteLine(file_name, line_counter--);
-                    fopen(file_name, "r");
-                    for(i = 0; i < line_counter; i++)
-                    {
-                        fgets(line, MAX_LINE_LENGTH, fp);
-                    }
-                }
-                else
-                {
+                if(strstr(line, "endmcr") == NULL) {
+                    fprintf(fp2, "%s", line);
                     algo_counter = 1;
                     break;
                 }
@@ -130,7 +103,6 @@ int exe_pre_assembler(char *file_name) {
     }
     fclose(fp);
     fclose(fp2);
-    free(token);
     free(mcro_name);
     free(line);
     free(temp_line);
@@ -140,12 +112,6 @@ int exe_pre_assembler(char *file_name) {
     {
         return 1;
     }
-    return 0;
-}
-
-int main() {
-    pre_assemble("harta2.txt");
-
     return 0;
 }
 

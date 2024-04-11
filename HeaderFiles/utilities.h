@@ -3,7 +3,6 @@
 
 #endif //ASSEMBLERPERSONAL_UTILITIES_H
 
-char* decimalToBinaryOLD(int num);
 char* decimalToBinary(int num, int length);
 
 int findL(char *line);

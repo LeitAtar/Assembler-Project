@@ -12,72 +12,12 @@
 
 extern symbol_list *symbol_table;
 
-char* decimalToBinaryOLD(int num) {
-    // Array to store binary number
-    char *binaryLine = calloc(14,1);
-    char *reverse_binaryLine;
-    int j = 0;
-    int is_negative = (num < 0) ? 1 : 0;
-    num = abs(num);
-
-    // Counter for binary array
-    int i = 0;
-    while (num > 0) {
-        // Store remainder in binary array
-        binaryLine[i] = num % 2 + '0';
-        num = num / 2;
-        i++;
-    }
-    if ((binaryLine = realloc(binaryLine, i + 1)) == NULL) {
-        printf("Memory reallocation failed\n");
-        return NULL;
-    }
-
-    if (is_negative) {
-        // Two's complement
-        for (j = 0; j < i; j++) {
-            binaryLine[j] = (binaryLine[j] == '0') ? '1' : '0';
-        }
-        // Add 1 to the binary number
-        for (j = 0; j < 16; j++) {
-            if (binaryLine[j] == '1') {
-                binaryLine[j] = '0';
-            } else {
-                binaryLine[j] = '1';
-                break;
-            }
-        }
-    }
-    char *ones = calloc(i + 1,1);
-
-    reverse_binaryLine = calloc(i + 1,1);
-    int k = 0;
-    // Print binary array in reverse order
-    for (j = i - 1; j >= 0; j--) {
-        //printf("%d", binaryNum[j]);
-        reverse_binaryLine[k] = binaryLine[j];
-        k++;
-    }
-    reverse_binaryLine[k] = '\0';
-
-    if(is_negative == 1) {
-        for (j = 0; j < 14 - strlen(reverse_binaryLine); j++) {
-            ones[j] = '1';
-        }
-
-    }
-    strcat(ones, reverse_binaryLine);
-    free(binaryLine);
-    free(reverse_binaryLine);
-    return ones;
-}
-
 char* decimalToBinary(int num, int length) {
     /*Array to store binary number*/
-    char *binaryLine = calloc(14,1);
+    char binaryLine[16];
     char *reverse_binaryLine;
     char *ones;
-    int j = 0;
+    int j = 0, k = 0;
     int is_negative = (num < 0) ? 1 : 0;
     num = abs(num);
 
@@ -85,20 +25,14 @@ char* decimalToBinary(int num, int length) {
         printf("Error: negative number with no length\n");
         return NULL;
     }
-
     /*Counter for binary array*/
     int i = 0;
     while (num > 0) {
         // Store remainder in binary array
-        binaryLine[i] = num % 2 + '0';
+        binaryLine[i] = (char) (num % 2 + '0');
         num = num / 2;
         i++;
     }
-    if ((binaryLine = realloc(binaryLine, i + 1)) == NULL) {
-        printf("Memory reallocation failed\n");
-        return NULL;
-    }
-
     if (is_negative) {
         /* Two's complement*/
         for (j = 0; j < i; j++) {
@@ -114,17 +48,22 @@ char* decimalToBinary(int num, int length) {
             }
         }
     }
-
     if (length == 0) {
-        ones = calloc(i + 1,1);
+        ones = calloc(i + 1, sizeof(char));
     }
     else
     {
-        ones = calloc(length + 1,1);
+        ones = calloc(length + 1, sizeof(char));
     }
+    reverse_binaryLine = calloc(i + 1, sizeof(char));
 
-    reverse_binaryLine = calloc(i + 1,1);
-    int k = 0;
+    if (reverse_binaryLine == NULL || ones == NULL) { // Check for allocation failure
+        printf("Memory allocation failed\n");
+        free(reverse_binaryLine);
+        free(ones);
+        return NULL;
+    }
+    k = 0;
     /* Print binary array in reverse order*/
     for (j = i - 1; j >= 0; j--) {
         //printf("%d", binaryNum[j]);
@@ -132,7 +71,6 @@ char* decimalToBinary(int num, int length) {
         k++;
     }
     reverse_binaryLine[k] = '\0';
-
     if(is_negative == 1) {
         for (j = 0; j < length - strlen(reverse_binaryLine); j++) {
             ones[j] = '1';
@@ -144,7 +82,6 @@ char* decimalToBinary(int num, int length) {
         }
     }
     strcat(ones, reverse_binaryLine);
-    free(binaryLine);
     free(reverse_binaryLine);
     return ones;
 }
@@ -432,6 +369,7 @@ char *to_binary (char *line) {
     //opcode
     token = decimalToBinary(command,4);
     strcat(binary_line, token);
+    free(token);
     //source operand
     token = strtok(NULL, ", \t");
     if (token == NULL) {
@@ -448,6 +386,7 @@ char *to_binary (char *line) {
             value = check_operand(op1);
             token = decimalToBinary(value, 2);
             strcat(binary_line, token);
+            free(token);
         }
         else {
             operands = 2;
@@ -455,9 +394,11 @@ char *to_binary (char *line) {
             value = check_operand(op1);
             token = decimalToBinary(value,2);
             strcat(binary_line, token);
+            free(token);
             value = check_operand(op2);
             token = decimalToBinary(value,2);
             strcat(binary_line, token);
+            free(token);
         }
     }
     //A,R,E
@@ -474,9 +415,11 @@ char *to_binary (char *line) {
         value = op1[1] - '0';
         token = decimalToBinary(value,3);
         strcat(binary_line, token);
+        free(token);
         value = op2[1] - '0';
         token = decimalToBinary(value,3);
         strcat(binary_line, token);
+        free(token);
         strcat(binary_line, "00\n");
         strcat(final, binary_line);
     }
@@ -512,6 +455,7 @@ char *to_binary (char *line) {
                     }
                     token = decimalToBinary(value,12);
                     strcpy(binary_line, token);
+                    free(token);
                     strcat(binary_line, "00\n"); /*for ARE*/
                     strcat(final, binary_line);
                     break;
@@ -534,6 +478,7 @@ char *to_binary (char *line) {
                             strcat(binary_line, "0");
                         }
                         strcat(binary_line, token);
+                        free(token);
 
                         if (strcmp(node->identifier, ".external") == 0) {
                             strcat(binary_line, "01");
@@ -568,6 +513,7 @@ char *to_binary (char *line) {
                             value = node->value;
                             token = decimalToBinary(value,12);
                             strcat(binary_line, token);
+                            free(token);
                             strcat(binary_line, "10\n");
                         }
                         strcat(final, binary_line);
@@ -595,6 +541,7 @@ char *to_binary (char *line) {
                     }
                     token = decimalToBinary(value,12);
                     strcat(binary_line, token);
+                    free(token);
                     strcat(binary_line, "00\n");
                     strcat(final, binary_line);
                     break;
@@ -624,6 +571,9 @@ char *to_binary (char *line) {
         }
 
     }
+    free(op1);
+    free(op2);
+    free(op);
     return final;
 }
 
@@ -735,7 +685,7 @@ int ext_file_creator(char *file_name) {
 char* data_to_binary (char* line) {
     char binary_line[16];
     char* final = malloc(1000);
-    char* token = malloc(16);
+    char* token;
     char* temp = malloc(16);
     int value;
     symbol_list* node;
@@ -746,11 +696,13 @@ char* data_to_binary (char* line) {
 
     if (token == NULL) {
         printf("Error: data is empty\n");
+        free(final);
+        free(token);
+        free(temp);
         return NULL;
     }
     while (token != NULL) {
         value = atoi(token);
-
         if (value == 0) {
             node = symbol_table;
             while (node != NULL) {
@@ -762,22 +714,27 @@ char* data_to_binary (char* line) {
             }
             if (node == NULL) {
                 printf("Error: data not found\n");
+                free(final);
+                free(token);
+                free(temp);
                 return NULL;
             }
         }
         token = decimalToBinary(value, 14);
         strcpy(binary_line, token);
+        free(token);
         strcat(binary_line, "\n");
         strcat(final, binary_line);
         token = strtok(NULL, " \t , \n");
     }
+    free(temp);
     return final;
 }
 
 char* string_to_binary (char* line) {
     char binary_line[16];
     char* final = malloc(1000);
-    char* token = malloc(200);
+    char* token;
     char* temp = malloc(200);
     int i = 0;
 
@@ -787,6 +744,8 @@ char* string_to_binary (char* line) {
     token = strtok(temp, " \t , \n");
     if (token == NULL) {
         printf("Error: string is empty\n");
+        free(final);
+        free(temp);
         return NULL;
     }
 
@@ -794,6 +753,7 @@ char* string_to_binary (char* line) {
         strcpy(binary_line, "");
         temp = decimalToBinary(token[i], 14);
         strcat(binary_line, temp);
+        free(temp);
         strcat(binary_line, "\n");
         strcat(final, binary_line);
     }

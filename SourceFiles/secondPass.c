@@ -76,7 +76,6 @@ int exe_second_pass(char *file_name, int IC, int DC) //symbol_list **symbol_tabl
         }
         else
         {
-
             if (strcmp(node->identifier, ".external") == 0)
             {
                 strcpy(temp_line, "00000000000001\n");
@@ -111,6 +110,9 @@ int exe_second_pass(char *file_name, int IC, int DC) //symbol_list **symbol_tabl
     if (fp == NULL || machine == NULL)
     {
         printf("failed to open file\n"); // make an error message later
+        free(token);
+        free(line);
+        free(node);
         return 1;
     }
     strcpy(token, "\t");
@@ -144,15 +146,12 @@ int exe_second_pass(char *file_name, int IC, int DC) //symbol_list **symbol_tabl
     remove(token);
     rename("temp____", token);
 
-
     if (error_flag == 1)
     {
         free(token);
         free(line);
-        //free(temp_line);
         free(node);
-        free(file_name);
-        //maybe delete file
+        /*maybe delete file*/
         printf("failed second assembly pass\n");
         return 1;
     }
@@ -177,13 +176,9 @@ int exe_second_pass(char *file_name, int IC, int DC) //symbol_list **symbol_tabl
         }
         fclose(fp);
     }
-
     free(token);
     free(line);
-    free(temp_line);
     free(node);
     symbol_table = NULL;
-
-
     return 0;
 }
