@@ -1,8 +1,9 @@
-#ifndef ASSEMBLERPERSONAL_DATASTRUCTURS_H
-#define ASSEMBLERPERSONAL_DATASTRUCTURS_H
+#ifndef ASSEMBLERPERSONAL_DATASTRUCTURES_H
+#define ASSEMBLERPERSONAL_DATASTRUCTURES_H
 
-#endif //ASSEMBLERPERSONAL_DATASTRUCTURES_H
-
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
 
 typedef struct macro_list { //for macros
     char *name;         /* Name associated with the node */
@@ -20,4 +21,6 @@ typedef struct symbol_list {
     struct symbol_list *next;
 } symbol_list;
 
+int insertToSymbolTable(symbol_list **head, char *symbol, int value, char *identifier, int is_entry);
 
+#endif //ASSEMBLERPERSONAL_DATASTRUCTURES_H

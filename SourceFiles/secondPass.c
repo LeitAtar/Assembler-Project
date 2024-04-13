@@ -10,8 +10,11 @@
 #include "../HeaderFiles/preAssembler.h"
 #include "../HeaderFiles/convertToBaseFour.h"
 
+extern symbol_list *symbol_table;
+
 int exe_second_pass(char *file_name, int IC, int DC) //symbol_list **symbol_table
 {
+    printf("Starting second pass on file: %s\n", file_name);
     symbol_list *node;
     FILE *fp, *machine;
     char *after_first_pass = malloc(MAX_LINE_LENGTH);
@@ -19,9 +22,10 @@ int exe_second_pass(char *file_name, int IC, int DC) //symbol_list **symbol_tabl
     char *line = malloc(MAX_LINE_LENGTH);
     char *temp_line;
     char *token = malloc(MAX_LINE_LENGTH);
-    int line_counter = 0 ,i = 0, error_flag = 0, external_flag = 0, entry_flag = 0;
+    int line_counter = 0, error_flag = 0, external_flag = 0, entry_flag = 0;
     fp = fopen(after_first_pass, "r");
     strcpy(token, file_name);
+    token = strtok(token, ".");
     strcat(token, ".ob");
     machine = fopen(token, "w");
 
@@ -92,7 +96,7 @@ int exe_second_pass(char *file_name, int IC, int DC) //symbol_list **symbol_tabl
                 if (temp_line == NULL)
                 {
                     error_flag = 1;
-                    printf("failed realloc\n"); // make an error message later
+                    printf("failed reallocation\n"); // make an error message later
                 }
                 strcat(temp_line, "10\n");
             }
@@ -115,6 +119,7 @@ int exe_second_pass(char *file_name, int IC, int DC) //symbol_list **symbol_tabl
     fclose(machine);
     remove("temp____");
     strcpy(token, file_name);
+    token = strtok(token, ".");
     strcat(token, ".ob");
     encrypt(token);
 
@@ -162,6 +167,7 @@ int exe_second_pass(char *file_name, int IC, int DC) //symbol_list **symbol_tabl
     fclose(fp);
     fclose(machine);
     strcpy(token, file_name);
+    token = strtok(token, ".");
     strcat(token, ".ob");
     remove(token);
     rename("temp____", token);
@@ -188,6 +194,7 @@ int exe_second_pass(char *file_name, int IC, int DC) //symbol_list **symbol_tabl
     if(entry_flag == 1)
     {
         strcpy(token, file_name);
+        token = strtok(token, ".");
         strcat(token, ".ent");
         fp = fopen(token, "w");
 
@@ -213,5 +220,6 @@ int exe_second_pass(char *file_name, int IC, int DC) //symbol_list **symbol_tabl
     temp_line = NULL;
     //free(symbol_table); //free the symbol table
     symbol_table = NULL;
+
     return 0;
 }

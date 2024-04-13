@@ -10,7 +10,7 @@
 int exe_pre_assembler(char *file_name) {
     FILE *fp, *fp2;
     char *token;
-    int line_counter = 0, is_mcr = 0, error_flag = 0, i;
+    int line_counter = 0, is_mcr = 0, error_flag = 0;
     char *mcro_name = calloc(MAX_LINE_LENGTH, sizeof(char)),
             *line = calloc(MAX_LINE_LENGTH, sizeof(char)),
             *temp_line = calloc(MAX_LINE_LENGTH, sizeof(char));
@@ -21,6 +21,11 @@ int exe_pre_assembler(char *file_name) {
     token = strtok(temp_line, ".");
     strcat(token, ".am");
     fp2 = fopen(token, "w");
+
+    if (fp == NULL || fp2 == NULL) {
+        printf("Error opening file\n");
+        return 1;
+    }
 
     int algo_counter = 1;
     while(algo_counter != 0)

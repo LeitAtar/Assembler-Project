@@ -5,10 +5,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include "Errors.h"
 #include "globals.h"
-#include "tables.h"
-#include "utilities.h"
 
 /* Represents an error with an associated error ID and error message */
 typedef struct Error {

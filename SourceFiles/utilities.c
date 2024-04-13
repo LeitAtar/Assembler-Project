@@ -660,32 +660,29 @@ char *to_binary (char *line) {
 int ext_file_creator(char *file_name) {
     FILE *fp;
     FILE *temp;
-    char *token = malloc(MAX_LINE_LENGTH);
-    strcpy(token, file_name);
-    strcat(token, ".am");
-    fp = fopen(token, "r");
+    char *token, *line, *temp_line;
+    int algo_counter = 1, IC = 100, first_register = 0;
+    fp = fopen(file_name, "r");
     if(fp == NULL)
     {
-        printf("error message"); // make an error message later
+        printf("Error: couldn't find file: %s", file_name); // make an error message later
         return 1;
     }
-    int algo_counter = 1, IC = 100, first_register = 0;
-    char *line = malloc(MAX_LINE_LENGTH);
-    char *temp_line = malloc(MAX_LINE_LENGTH);
+    line = malloc(MAX_LINE_LENGTH);
+    temp_line = malloc(MAX_LINE_LENGTH);
+    token = malloc(MAX_LINE_LENGTH);
     symbol_list *node = symbol_table;
-
     strcpy(token, "");
-
     strcpy(token, file_name);
     token = strtok(token, ".");
     strcat(token, ".ext");
     temp = fopen(token, "w");
-
     if(temp == NULL)
     {
-        printf("error message"); // make an error message later
+        printf("Error: couldn't generate .ext file: %s", file_name); // make an error message later
         return 1;
     }
+    printf("Generating .ext file for: %s\n", token);
     strcpy(token, "");
     while(algo_counter != 0)
     {

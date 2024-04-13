@@ -1,7 +1,9 @@
 #ifndef ASSEMBLERPERSONAL_UTILITIES_H
 #define ASSEMBLERPERSONAL_UTILITIES_H
 
-#endif //ASSEMBLERPERSONAL_UTILITIES_H
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
 
 char* decimalToBinary(int num, int length);
 
@@ -26,4 +28,7 @@ int ext_file_creator(char *file_name);
 char* data_to_binary (char* line);
 
 char* string_to_binary (char* line);
+
+#endif
+
 

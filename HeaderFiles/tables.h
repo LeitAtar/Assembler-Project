@@ -1,9 +1,11 @@
 #ifndef ASSEMBLERPERSONAL_TABLES_H
 #define ASSEMBLERPERSONAL_TABLES_H
 
-#endif //ASSEMBLERPERSONAL_TABLES_H
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
 
-typedef struct label_address {
+/*typedef struct label_address {
     int address;
     char *label_name;
     int assembly_line;
@@ -16,6 +18,7 @@ typedef struct label_address {
 typedef struct other_table {
     char *label_name;
     int assembly_line;
-} other_table;
+} other_table;*/
 
-int insertToSymbolTable(symbol_list **head, char *symbol, int value, char *identifier, int is_entry);
+
+#endif //ASSEMBLERPERSONAL_TABLES_H

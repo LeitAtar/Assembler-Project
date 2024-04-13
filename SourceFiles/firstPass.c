@@ -10,16 +10,14 @@
 #include "../HeaderFiles/preAssembler.h"
 #include "../HeaderFiles/convertToBaseFour.h"
 
-symbol_list *symbol_table = NULL;
+symbol_list *symbol_table;
 
 int exe_first_pass(char *file_name) {
-    int algoCounter = 1, IC, DC, label_flag = 0, value = 0, error_flag = 0, L = 0, i = 0, line_counter = 0;
+    int algoCounter = 1, IC, DC, label_flag = 0, value = 0, error_flag = 0, L = 0, line_counter = 0;
     char *token = malloc(MAX_LINE_LENGTH);
     char *str, *temp;
 
-    strcpy(token, file_name);
-    strcat(token, ".am");
-    FILE *fp = fopen(token, "r");
+    FILE *fp = fopen(file_name, "r");
     FILE *machine = fopen("temp____", "w");
 
     if (fp == NULL || machine == NULL) {
@@ -33,7 +31,7 @@ int exe_first_pass(char *file_name) {
     free(token);
     token = NULL;
     symbol_table = NULL;
-    symbol_list *node = symbol_table;
+    symbol_list *node;
 
     while(algoCounter != 0) {
         switch (algoCounter) {
@@ -68,7 +66,7 @@ int exe_first_pass(char *file_name) {
                     break;
                 }
             case 4:
-                token = strtok(NULL, " \t"); //name of the define
+                token = strtok(NULL, " \t"); //definition name
                 value = atoi(strtok(NULL, "= \t"));
                 if (value == 0) { //failed to read the value
                     error_flag = 1;
@@ -135,7 +133,7 @@ int exe_first_pass(char *file_name) {
                 strcpy(temp, str); //copy the string to temp
                 token = strtok(temp, " \t");
 
-                if (strstr(token, ":") != NULL) { //if its a label
+                if (strstr(token, ":") != NULL) { //if it's a label
                     token = strtok(NULL, " \t");
                 }
 
@@ -232,7 +230,6 @@ int exe_first_pass(char *file_name) {
                     token = strtok(NULL, ":\n");
                 }
                 else {
-                    //strcpy(token, temp);
                     token = temp;
                 }
                 L = findL(token);
@@ -293,11 +290,13 @@ int exe_first_pass(char *file_name) {
     token = NULL;
     if (error_flag == 1) {
         remove("temp____");
+        printf("Error: failed first pass on file: %s\n", file_name);
         return 1;
     }
-    exe_second_pass(file_name, IC, DC);
-    /*if (error_flag == 1) {
+
+    if (exe_second_pass(file_name, IC, DC) != 0) {
+        printf("Error: failed second pass on file: %s\n", file_name);
         return 1;
-    }*/
+    }
     return 0;
 }
