@@ -12,12 +12,12 @@
 
 int exe_second_pass(char *file_name, int IC, int DC) //symbol_list **symbol_table
 {
-    symbol_list *node = symbol_table;
+    symbol_list *node;
     FILE *fp, *machine;
     char *after_first_pass = malloc(MAX_LINE_LENGTH);
     strcpy(after_first_pass, "temp____");
     char *line = malloc(MAX_LINE_LENGTH);
-    char *temp_line = malloc(MAX_LINE_LENGTH);
+    char *temp_line;
     char *token = malloc(MAX_LINE_LENGTH);
     int line_counter = 0 ,i = 0, error_flag = 0, external_flag = 0, entry_flag = 0;
     fp = fopen(after_first_pass, "r");
@@ -50,12 +50,15 @@ int exe_second_pass(char *file_name, int IC, int DC) //symbol_list **symbol_tabl
         {
             continue;
         }
+        temp_line = calloc(MAX_LINE_LENGTH, 1);
         line_counter++;
         strcpy(temp_line, line);
         node = symbol_table;
         if(temp_line[0] == '1' || temp_line[0] == '0')
         {
             fprintf(machine, "%s", line);
+            free(temp_line);
+            temp_line = NULL;
             continue;
         }
         node = symbol_table;
@@ -82,7 +85,15 @@ int exe_second_pass(char *file_name, int IC, int DC) //symbol_list **symbol_tabl
             }
             else
             {
+                free(temp_line);
+                temp_line = NULL;
                 temp_line = decimalToBinary(node->value, 12);
+                temp_line = realloc(temp_line, strlen (temp_line) + 4);
+                if (temp_line == NULL)
+                {
+                    error_flag = 1;
+                    printf("failed realloc\n"); // make an error message later
+                }
                 strcat(temp_line, "10\n");
             }
             if(temp_line == NULL)
@@ -95,7 +106,10 @@ int exe_second_pass(char *file_name, int IC, int DC) //symbol_list **symbol_tabl
                 fprintf(machine, "%s", temp_line);
             }
         }
+        //free(temp_line);
+        temp_line = NULL;
     }
+
 
     fclose(fp);
     fclose(machine);
@@ -111,10 +125,16 @@ int exe_second_pass(char *file_name, int IC, int DC) //symbol_list **symbol_tabl
     {
         printf("failed to open file\n"); // make an error message later
         free(token);
+        token = NULL;
         free(line);
+        line = NULL;
         free(node);
+        node = NULL;
+        free(temp_line);
+        temp_line = NULL;
         return 1;
     }
+    temp_line = malloc(MAX_LINE_LENGTH);
     strcpy(token, "\t");
     sprintf(temp_line, "%d", IC);
     strcat(token, temp_line);
@@ -146,11 +166,17 @@ int exe_second_pass(char *file_name, int IC, int DC) //symbol_list **symbol_tabl
     remove(token);
     rename("temp____", token);
 
+
     if (error_flag == 1)
     {
         free(token);
+        token = NULL;
         free(line);
+        line = NULL;
         free(node);
+        node = NULL;
+        free(temp_line);
+        temp_line = NULL;
         /*maybe delete file*/
         printf("failed second assembly pass\n");
         return 1;
@@ -176,9 +202,16 @@ int exe_second_pass(char *file_name, int IC, int DC) //symbol_list **symbol_tabl
         }
         fclose(fp);
     }
+
     free(token);
+    token = NULL;
     free(line);
+    line = NULL;
     free(node);
+    node = NULL;
+    free(temp_line);
+    temp_line = NULL;
+    //free(symbol_table); //free the symbol table
     symbol_table = NULL;
     return 0;
 }

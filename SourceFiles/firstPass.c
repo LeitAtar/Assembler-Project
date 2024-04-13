@@ -13,7 +13,10 @@
 symbol_list *symbol_table = NULL;
 
 int exe_first_pass(char *file_name) {
+    int algoCounter = 1, IC, DC, label_flag = 0, value = 0, error_flag = 0, L = 0, i = 0, line_counter = 0;
     char *token = malloc(MAX_LINE_LENGTH);
+    char *str, *temp;
+
     strcpy(token, file_name);
     strcat(token, ".am");
     FILE *fp = fopen(token, "r");
@@ -21,12 +24,14 @@ int exe_first_pass(char *file_name) {
 
     if (fp == NULL || machine == NULL) {
         printf("Error opening file.\n");
+        free(token);
+        token = NULL;
         return 1;
     }
+    str = malloc(MAX_LINE_LENGTH), temp = malloc(MAX_LINE_LENGTH);
 
-    int algoCounter = 1, IC, DC, label_flag = 0, value = 0, error_flag = 0, L = 0, i = 0;
-    char *str = malloc(MAX_LINE_LENGTH), *temp = malloc(MAX_LINE_LENGTH);
-
+    free(token);
+    token = NULL;
     symbol_table = NULL;
     symbol_list *node = symbol_table;
 
@@ -43,6 +48,7 @@ int exe_first_pass(char *file_name) {
 
                 fgets(str, MAX_LINE_LENGTH, fp);
                 label_flag = 0; //reset
+                line_counter++;
                 strcpy(temp, str); //copy the string to temp
                 token = strtok(temp, " \t\n");
                 if (str[0] == ';' || token == NULL) { //if comment or empty line
@@ -137,6 +143,8 @@ int exe_first_pass(char *file_name) {
                     token = strtok(NULL, "\n");
                     token = data_to_binary(token);
                     fprintf(machine, "%s", token);
+                    free(token);
+                    token = NULL;
                     strcpy(temp, str);
                     token = strtok(temp, ".");
                     token = strtok(NULL, " \t");
@@ -154,8 +162,8 @@ int exe_first_pass(char *file_name) {
                     strcpy(temp, str);
                     token = strtok(temp, ".");
                     token = strtok(NULL, " \t\n");
-                    token = strtok(NULL, " \t\n");
-                    DC += (int) strlen(token) - 5;
+                    token = strtok(NULL, " \t \n \" ");
+                    DC += (int) strlen(token) + 1;
                 }
                 else {
                     error_flag = 1;
@@ -246,10 +254,11 @@ int exe_first_pass(char *file_name) {
                 token = to_binary(token);
                 if (token == NULL) {
                     error_flag = 1;
-                    printf("failed to machinise command: %s\n", str);
+                    printf("ERROR: Line %d: failed to machinise command: %s\n",line_counter, str);
                 }
                 fprintf(machine, "%s", token);
-
+                free(token);
+                token = NULL;
             case 15: //done
                 IC += L;
                 algoCounter = 2;
@@ -277,10 +286,18 @@ int exe_first_pass(char *file_name) {
     fclose(fp);
     fclose(machine);
     free(str);
+    str = NULL;
     free(temp);
-    exe_second_pass(file_name, IC, DC);
+    temp = NULL;
+    free(token);
+    token = NULL;
     if (error_flag == 1) {
+        remove("temp____");
         return 1;
     }
+    exe_second_pass(file_name, IC, DC);
+    /*if (error_flag == 1) {
+        return 1;
+    }*/
     return 0;
 }

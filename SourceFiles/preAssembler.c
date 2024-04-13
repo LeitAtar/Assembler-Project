@@ -11,7 +11,9 @@ int exe_pre_assembler(char *file_name) {
     FILE *fp, *fp2;
     char *token;
     int line_counter = 0, is_mcr = 0, error_flag = 0, i;
-    char *mcro_name = malloc(MAX_LINE_LENGTH), *line = malloc(MAX_LINE_LENGTH), *temp_line = calloc(MAX_LINE_LENGTH, sizeof(char));
+    char *mcro_name = calloc(MAX_LINE_LENGTH, sizeof(char)),
+            *line = calloc(MAX_LINE_LENGTH, sizeof(char)),
+            *temp_line = calloc(MAX_LINE_LENGTH, sizeof(char));
     macro_list *table = NULL;
     macro_list *node = NULL;
     fp = fopen(file_name, "r");
@@ -25,13 +27,13 @@ int exe_pre_assembler(char *file_name) {
     {
         switch (algo_counter) {
             case 1:
-                fgets(line, MAX_LINE_LENGTH, fp);
-                strcpy(temp_line, line);
-                line_counter++;
                 if (feof(fp)) {
                     algo_counter = 9;
                     break;
                 }
+                fgets(line, MAX_LINE_LENGTH, fp);
+                strcpy(temp_line, line);
+                line_counter++;
             case 2:
                 token = strtok(temp_line," \t");
                 node = isInMacroTable(table,token);
@@ -104,9 +106,13 @@ int exe_pre_assembler(char *file_name) {
     fclose(fp);
     fclose(fp2);
     free(mcro_name);
+    mcro_name = NULL;
     free(line);
+    line = NULL;
     free(temp_line);
+    temp_line = NULL;
     free(node);
+    node = NULL;
 
     if (error_flag == 1)
     {
