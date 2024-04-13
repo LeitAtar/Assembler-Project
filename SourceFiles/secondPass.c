@@ -11,6 +11,7 @@
 #include "../HeaderFiles/convertToBaseFour.h"
 
 extern symbol_list *symbol_table;
+extern macro_list *mcr_table;
 
 int exe_second_pass(char *file_name, int IC, int DC) //symbol_list **symbol_table
 {

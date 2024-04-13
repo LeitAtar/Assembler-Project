@@ -29,6 +29,8 @@ char* data_to_binary (char* line);
 
 char* string_to_binary (char* line);
 
+int label_check(char* label);
+
 #endif
 
 

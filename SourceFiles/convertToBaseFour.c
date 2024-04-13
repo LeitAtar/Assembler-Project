@@ -20,7 +20,7 @@ int encrypt(char *file_name) {
     FILE *final;
     final = fopen("temp____", "w");
     char currentNum[BASE_TWO_WORD];
-    char *baseFourNum = malloc(BASE_FOUR_WORD);
+    char *baseFourNum;
 
     if (fp == NULL) {
         printf("Error opening file.\n");
@@ -31,6 +31,8 @@ int encrypt(char *file_name) {
     while(fgets(currentNum, BASE_TWO_WORD, fp) != NULL) {
         baseFourNum = convertToBaseFour(currentNum);
         fprintf(final, "%s\n",baseFourNum);  // Corrected format specifier and added newline
+        free(baseFourNum);
+        baseFourNum = NULL;
     }
 
     fclose(fp);

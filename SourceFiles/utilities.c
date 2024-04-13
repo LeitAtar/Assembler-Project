@@ -11,6 +11,7 @@
 #include "../HeaderFiles/convertToBaseFour.h"
 
 extern symbol_list *symbol_table;
+extern macro_list *mcr_table;
 
 char* decimalToBinary(int num, int length) {
     /*Array to store binary number*/
@@ -208,6 +209,10 @@ int insertToMacroTable(macro_list **table, char *mcro_name, char *content) {
         // Reallocate memory for combined content
         size_t new_size = strlen(node->content) + strlen(content) + 1; // +1 for null terminator
         node->content = realloc(node->content, new_size);
+        if (node->content == NULL) {
+            /* Handle memory allocation failure*/
+            return -1;
+        }
         strcat(node->content, content);
         node->line_amount++;
     } else {
@@ -339,8 +344,13 @@ int check_operand(char *token) {
         return 2;
     }
 
-    if (token[0] == 'r' && token[1] >= '0' && token[1] <= '7') {
-        return 3;
+    if (token[0] == 'r') {
+        if (token[1] >= '0' && token[1] <= '7')
+            return 3;
+        else {
+            printf("Error: register doesn't exist");
+            return -1;
+        }
     }
 
     return 1; // label
@@ -354,7 +364,7 @@ char *to_binary (char *line) {
     char *token;
     char *op1 = malloc(MAX_LINE_LENGTH);
     char *op2 = malloc(MAX_LINE_LENGTH);
-    char *op = malloc(MAX_LINE_LENGTH);
+    char *op;
     char *temp = malloc(MAX_LINE_LENGTH);
     int value;
     int command;
@@ -364,12 +374,25 @@ char *to_binary (char *line) {
     strcpy(temp, line);
     token = strtok(temp, " \t");
     command = search_command(token);
+    if (command == -1) {
+        printf("Error: command doesn't exist");
+        free(binary_line);
+        binary_line = NULL;
+        free(final);
+        final = NULL;
+        free(op1);
+        op1 = NULL;
+        free(op2);
+        op2 = NULL;
+        return NULL;
+    }
 
     strcpy(binary_line, "0000");
     //opcode
     token = decimalToBinary(command,4);
     strcat(binary_line, token);
     free(token);
+    token = NULL;
     //source operand
     token = strtok(NULL, ", \t");
     if (token == NULL) {
@@ -384,19 +407,53 @@ char *to_binary (char *line) {
             operands = 1;
             strcat(binary_line, "00");
             value = check_operand(op1);
+            if (value == -1) {
+                free(binary_line);
+                binary_line = NULL;
+                free(final);
+                final = NULL;
+                free(op1);
+                op1 = NULL;
+                free(op2);
+                op2 = NULL;
+                return NULL;
+            }
             token = decimalToBinary(value, 2);
             strcat(binary_line, token);
             free(token);
+            token = NULL;
         }
         else {
             operands = 2;
             strcpy(op2, token);
             value = check_operand(op1);
+            if (value == -1) {
+                free(binary_line);
+                binary_line = NULL;
+                free(final);
+                final = NULL;
+                free(op1);
+                op1 = NULL;
+                free(op2);
+                op2 = NULL;
+                return NULL;
+            }
             token = decimalToBinary(value,2);
             strcat(binary_line, token);
             free(token);
             token = NULL;
             value = check_operand(op2);
+            if (value == -1) {
+                free(binary_line);
+                binary_line = NULL;
+                free(final);
+                final = NULL;
+                free(op1);
+                op1 = NULL;
+                free(op2);
+                op2 = NULL;
+                return NULL;
+            }
             token = decimalToBinary(value,2);
             strcat(binary_line, token);
             free(token);
@@ -408,108 +465,131 @@ char *to_binary (char *line) {
     strcpy(final, binary_line);
 
     //first word done, now second word
-    if (operands == 0) {
+    if (operands == 0 && (command == 14 || command == 15)) {
         free(op1);
         op1 = NULL;
         free(op2);
         op2 = NULL;
-        free(op);
-        op = NULL;
         return final;
     }
+    if (operands == 0) {
+        printf("Error: missing operands");
+        free(op1);
+        op1 = NULL;
+        free(op2);
+        op2 = NULL;
+        free(final);
+        return NULL;
+    }
     if (command == 14 || command == 15) { /*operands variable is bigger than 0*/
-        printf("Error: hlt or rts with operands\n");
+        printf("Error: hlt or rts with operands");
         free(op1);
         op1 = NULL;
         free(op2);
         op2 = NULL;
-        free(op);
-        op = NULL;
         free(final);
         return NULL;
     }
-
+    /*dealing with 1 operand command errors*/
     if ((command == 4 || command == 5 || command >= 7) && operands > 1) {
-        printf("Error: Too many operands for this command\n");
+        printf("Error: Too many operands");
         free(op1);
         op1 = NULL;
         free(op2);
         op2 = NULL;
-        free(op);
-        op = NULL;
         free(final);
         return NULL;
     }
-
-    /*dealing with 2 operand command errors*/
-    if ((command <= 3 || command == 6) && operands <= 1) {
-        printf("Error: Too few operands for this command\n");
-        free(op1);
-        op1 = NULL;
-        free(op2);
-        op2 = NULL;
-        free(op);
-        op = NULL;
-        free(final);
-        return NULL;
-    }
-
-    if (command <= 3 || command == 6) {
-        if (check_operand(op1) > 3 || check_operand(op1) < 0
-            || (command == 6 && check_operand(op1) != 1 && check_operand(op1) != 2)) {
-            printf("Error: Invalid source operand for this command\n");
+    if (command == 4 || command == 5 || command >= 7) {
+        if ((check_operand(op1) < 1 && command != 12)
+        || (check_operand(op1) == 2 && (command == 9 || command == 10 || command == 13))
+            ) {
+            printf("Error: Invalid destination operand");
             free(op1);
             op1 = NULL;
             free(op2);
             op2 = NULL;
-            free(op);
-            op = NULL;
             free(final);
             return NULL;
         }
-        if (check_operand(op2) > 3 || check_operand(op2) < 1) {
+    }
+    /*dealing with 2 operand command errors*/
+    if ((command <= 3 || command == 6) && operands <= 1) {
+        printf("Error: Too few operands");
+        free(op1);
+        op1 = NULL;
+        free(op2);
+        op2 = NULL;
+        free(final);
+        final = NULL;
+        return NULL;
+    }
+
+    if (command <= 3 || command == 6) {
+        if (check_operand(op1) < 0
+            || (command == 6 && check_operand(op1) != 1 && check_operand(op1) != 2)) {
+            printf("Error: Invalid source operand");
+            free(op1);
+            op1 = NULL;
+            free(op2);
+            op2 = NULL;
+            free(final);
+            return NULL;
+        }
+        if (check_operand(op2) < 1) {
             if (command != 1 || check_operand(op2) < 0) {
-                printf("Error: Invalid destination operand for this command\n");
+                printf("Error: Invalid destination operand");
                 free(op1);
                 op1 = NULL;
                 free(op2);
                 op2 = NULL;
-                free(op);
-                op = NULL;
                 free(final);
                 return NULL;
             }
         }
     }
 
-    if (check_operand(op1) == 3 && operands == 2 && check_operand(op2) == 3) { //special
+    if (check_operand(op1) == 3 && operands == 2 && check_operand(op2) == 3) {
         strcpy(binary_line, "000000");
         value = op1[1] - '0';
         token = decimalToBinary(value,3);
         strcat(binary_line, token);
         free(token);
+        token = NULL;
         value = op2[1] - '0';
         token = decimalToBinary(value,3);
         strcat(binary_line, token);
         free(token);
+        token = NULL;
         strcat(binary_line, "00\n");
         strcat(final, binary_line);
     }
-    else { //not special case
+    else { /*not a special case*/
         value = check_operand(op1);
-        strcpy(op, op1);
+        op = op1;
         if (operands == 2) {
             j = 0;
         }
         if (operands == 1) {
             j = 1;
         }
+        free(temp);
+        temp = NULL;
         for (j; j < 2; ++j) {
             strcpy(binary_line, "");
+            temp = malloc(MAX_LINE_LENGTH);
             switch (value) {
                 case 0: //immediate
                     strcpy(temp, op);
                     token = strtok(temp, "#\n");
+                    if (token == NULL) {
+                        printf("Error: invalid immediate operand");
+                        free(op1);
+                        op1 = NULL;
+                        free(op2);
+                        op2 = NULL;
+                        return NULL;
+                    }
                     value = atoi(token);
                     if (value == 0) {
                         node = symbol_table;
@@ -520,14 +600,14 @@ char *to_binary (char *line) {
                             node = node->next;
                         }
                         if (node == NULL) {
-                            printf("Error: definition not found\n");
+                            printf("Error: definition not found");
                             return NULL;
                         }
                         value = node->value;
                     }
                     token = decimalToBinary(value,12);
                     if (token == NULL) {
-                        printf("Error: decimalToBinary failed\n");
+                        printf("Error: invalid number");
                         return NULL;
                     }
                     strcpy(binary_line, token);
@@ -556,7 +636,7 @@ char *to_binary (char *line) {
                         }
                         strcat(binary_line, token);
                         free(token);
-
+                        token = NULL;
                         if (strcmp(node->identifier, ".external") == 0) {
                             strcat(binary_line, "01");
                         } else {
@@ -567,6 +647,7 @@ char *to_binary (char *line) {
                     strcat(final, binary_line);
                     break;
                 case 2: /*index*/
+                    //here error
                     strcpy(temp, op);
                     token = strtok(temp, "[");
                     node = symbol_table;
@@ -591,12 +672,12 @@ char *to_binary (char *line) {
                             token = decimalToBinary(value,12);
                             strcat(binary_line, token);
                             free(token);
+                            token = NULL;
                             strcat(binary_line, "10\n");
                         }
                         strcat(final, binary_line);
                     }
                     strcpy(binary_line, "");
-
                     //now index
                     strcpy(temp, op);
                     token = strtok(temp, "[");
@@ -611,7 +692,7 @@ char *to_binary (char *line) {
                             node = node->next;
                         }
                         if (node == NULL) {
-                            printf("Error: label not found\n");
+                            printf("Error: label not found");
                             return NULL;
                         }
                         value = node->value;
@@ -619,6 +700,7 @@ char *to_binary (char *line) {
                     token = decimalToBinary(value,12);
                     strcat(binary_line, token);
                     free(token);
+                    token = NULL;
                     strcat(binary_line, "00\n");
                     strcat(final, binary_line);
                     break;
@@ -629,6 +711,8 @@ char *to_binary (char *line) {
                     strcpy(token, "");
                     temp = decimalToBinary(value,3);
                     strcat(token, temp);
+                    free(temp);
+                    temp = NULL;
                     if (j == 0) { /*source register*/
                         strcat(binary_line, "000000");
                         strcat(binary_line, token);
@@ -641,10 +725,19 @@ char *to_binary (char *line) {
                     strcat(final, binary_line);
                     break;
                 default:
-                    break;
+                    printf("Error: invalid command");
+                    free(op1);
+                    op1 = NULL;
+                    free(op2);
+                    op2 = NULL;
+                    free(final);
+                    final = NULL;
+                    return NULL;
             }
+            free(temp);
+            temp = NULL;
             value = check_operand(op2);
-            strcpy(op, op2);
+            op = op2;
         }
 
     }
@@ -652,8 +745,6 @@ char *to_binary (char *line) {
     op1 = NULL;
     free(op2);
     op2 = NULL;
-    free(op);
-    op = NULL;
     return final;
 }
 
@@ -882,4 +973,32 @@ char* string_to_binary (char* line) {
     }
     strcat(final, "00000000000000\n");
     return final;
+}
+
+int label_check(char* label) {
+    macro_list *node;
+    if (label == NULL) {
+        return 1;
+    }
+    if (strlen(label) > MAX_LABEL_LENGTH
+        || strchr(label, ' ') != NULL
+        || strchr(label, '\t') != NULL
+        || !((label[0] <= 'Z' && label[0] >= 'A') || (label[0] <= 'z' && label[0] >= 'a'))
+            ) {
+        return 1;
+    }
+
+    if (strcmp(label, "r1") == 0 || strcmp(label, "r2") == 0 || strcmp(label, "r3") == 0
+        || strcmp(label, "r4") == 0 || strcmp(label, "r5") == 0 || strcmp(label, "r6") == 0
+        || strcmp(label, "r7") == 0 || strcmp(label, "r0") == 0) {
+        return 1;
+    }
+    node = mcr_table;
+    while (node != NULL) {
+        if (strcmp(node->name, label) == 0) {
+            return 1;
+        }
+        node = node->next;
+    }
+    return 0;
 }

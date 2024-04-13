@@ -35,6 +35,7 @@ int main(int argc, char *argv[]) {
 
     /*Free allocated memory*/
     free(file_name);
+    file_name = NULL;
     printf("end\n");
     return 0;
 }

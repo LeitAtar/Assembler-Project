@@ -21,6 +21,7 @@ typedef struct symbol_list {
     struct symbol_list *next;
 } symbol_list;
 
+
 int insertToSymbolTable(symbol_list **head, char *symbol, int value, char *identifier, int is_entry);
 
 #endif //ASSEMBLERPERSONAL_DATASTRUCTURES_H

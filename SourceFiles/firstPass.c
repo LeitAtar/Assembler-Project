@@ -10,7 +10,8 @@
 #include "../HeaderFiles/preAssembler.h"
 #include "../HeaderFiles/convertToBaseFour.h"
 
-symbol_list *symbol_table;
+extern symbol_list *symbol_table;
+extern macro_list *mcr_table;
 
 int exe_first_pass(char *file_name) {
     int algoCounter = 1, IC, DC, label_flag = 0, value = 0, error_flag = 0, L = 0, line_counter = 0;
@@ -90,10 +91,9 @@ int exe_first_pass(char *file_name) {
                     break;
                 }
 
-                if (strlen(token) > MAX_LABEL_LENGTH
-                    || strchr(token, ' ') != NULL) { //wrong label definition
+                if (label_check(token) == 1) {
                     error_flag = 1;
-                    printf("wrong label definition\n");
+                    printf("Illegal label declaration | line:%d\n", line_counter);
                 }
 
             case 6: //done
@@ -110,7 +110,9 @@ int exe_first_pass(char *file_name) {
                     if (strcasecmp(token, ".data") == 0
                         || strcasecmp(token, ".string") == 0) { //wrong data or string
                         error_flag = 1;
-                        printf("wrong data or string\n");
+                        printf("wrong .data or .string | line:%d\n", line_counter);
+                        algoCounter = 2;
+                        break;
                     }
                     algoCounter = 10;
                     break;
@@ -137,7 +139,7 @@ int exe_first_pass(char *file_name) {
                     token = strtok(NULL, " \t");
                 }
 
-                if (strcasecmp(token, ".data") == 0) {
+                if (strcmp(token, ".data") == 0) {
                     token = strtok(NULL, "\n");
                     token = data_to_binary(token);
                     fprintf(machine, "%s", token);
@@ -153,7 +155,7 @@ int exe_first_pass(char *file_name) {
                         token = strtok(NULL, ",\n");
                     }
                 }
-                else if (strcasecmp(token, ".string") == 0) {
+                else if (strcmp(token, ".string") == 0) {
                     token = strtok(NULL, " \t");
                     token = string_to_binary(token);
                     fprintf(machine, "%s", token);
@@ -251,9 +253,10 @@ int exe_first_pass(char *file_name) {
                 token = to_binary(token);
                 if (token == NULL) {
                     error_flag = 1;
-                    printf("ERROR: Line %d: failed to machinise command: %s\n",line_counter, str);
+                    printf(" | line:%d\n", line_counter);
                 }
-                fprintf(machine, "%s", token);
+                else
+                    fprintf(machine, "%s", token);
                 free(token);
                 token = NULL;
             case 15: //done
@@ -298,5 +301,9 @@ int exe_first_pass(char *file_name) {
         printf("Error: failed second pass on file: %s\n", file_name);
         return 1;
     }
+    printf("File: %s assembled successfully\n", file_name);
+    symbol_table = NULL;
+    mcr_table = NULL;
+    node = NULL;
     return 0;
 }
