@@ -75,14 +75,13 @@ int exe_first_pass(char *file_name) {
                 }
                 token = strtok(NULL, " \t \n ="); //definition name
                 ptr = strtok(NULL, " \t \n ="); //definition value
-                value = atoi(ptr);
-                if (value == 0 && (strlen(ptr) != 1 ||ptr[0] != '0')) { //failed to read the value
+                if (num_check(ptr) == 1) { //if the value is not a number
                     error_flag = 1;
-                    printf("Error: failed to read a value | line:%d\n", line_counter);
-
+                    printf("Error: wrong define syntax | line:%d\n", line_counter);
                     algoCounter = 2;
                     break;
                 }
+                value = atoi(ptr);
                 value = insertToSymbolTable(&symbol_table, token, value, ".mdefine", 0);
                 if (value == 1) { /*failed to insert symbol*/
                     error_flag = 1;
@@ -128,10 +127,10 @@ int exe_first_pass(char *file_name) {
                     break;
                 }
             case 8:
-                strcpy(temp, str); //copy the string to temp
-                token = strtok(temp, ":"); //reset token
+                strcpy(temp, str);
+                token = strtok(temp, ":");
                 if (label_flag == 1) { //label
-                    if (strcmp(strtok(NULL, " \t"), ".entry") != 0) { //not .entry
+                    if (strcmp(strtok(NULL, " \t"), ".entry") != 0) { /*not .entry*/
                         value = insertToSymbolTable(&symbol_table, token, DC, ".data", 0);
                         if (value == 1) { //failed to insert label
                             error_flag = 1;

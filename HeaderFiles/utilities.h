@@ -31,6 +31,8 @@ char* string_to_binary (char* line);
 
 int label_check(char* label);
 
+int num_check(char* num);
+
 #endif
 
 

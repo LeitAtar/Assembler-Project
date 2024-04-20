@@ -600,7 +600,7 @@ char *to_binary (char *line) {
                         return NULL;
                     }
                     value = atoi(token);
-                    if (value == 0) {
+                    if (num_check(token) != 0) {
                         node = symbol_table;
                         while (node != NULL) {
                             if (strcmp(node->symbol, token) == 0 && strcmp(node->identifier, ".mdefine") == 0) {
@@ -656,7 +656,6 @@ char *to_binary (char *line) {
                     strcat(final, binary_line);
                     break;
                 case 2: /*index*/
-                    //here error
                     strcpy(temp, op);
                     token = strtok(temp, "[");
                     node = symbol_table;
@@ -692,7 +691,7 @@ char *to_binary (char *line) {
                     token = strtok(temp, "[");
                     token = strtok(NULL, "]");
                     value = atoi(token);
-                    if (value == 0) {
+                    if (num_check(token) != 0){
                         node = symbol_table;
                         while (node != NULL) {
                             if (strcmp(node->symbol, token) == 0 && strcmp(node->identifier, ".mdefine") == 0) {
@@ -702,9 +701,25 @@ char *to_binary (char *line) {
                         }
                         if (node == NULL) {
                             printf("Error: label not found");
+                            free(op1);
+                            op1 = NULL;
+                            free(op2);
+                            op2 = NULL;
+                            free(final);
+                            final = NULL;
                             return NULL;
                         }
                         value = node->value;
+                    }
+                    if (value < 0) {
+                        printf("Error: negative index");
+                        free(op1);
+                        op1 = NULL;
+                        free(op2);
+                        op2 = NULL;
+                        free(final);
+                        final = NULL;
+                        return NULL;
                     }
                     token = decimalToBinary(value,12);
                     strcat(binary_line, token);
@@ -717,6 +732,15 @@ char *to_binary (char *line) {
                     strcpy(temp, op);
                     token = strtok(temp, "r");
                     value = atoi(token);
+                    if (num_check(token) != 0) {
+                        printf("Error: invalid register");
+                        free(op1);
+                        op1 = NULL;
+                        free(op2);
+                        op2 = NULL;
+                        free(final);
+                        return NULL;
+                    }
                     strcpy(token, "");
                     temp = decimalToBinary(value,3);
                     strcat(token, temp);
@@ -885,7 +909,7 @@ char* data_to_binary (char* line) {
     }
     while (token != NULL) {
         value = atoi(token);
-        if (value == 0) {
+        if (num_check(token) != 0) {
             node = symbol_table;
             while (node != NULL) {
                 if (strcmp(node->symbol, token) == 0 && strcmp(node->identifier, ".mdefine") == 0) {
@@ -989,6 +1013,22 @@ int label_check(char* label) {
             return 1;
         }
         node = node->next;
+    }
+    return 0;
+}
+
+int num_check(char* num) {
+    int i = 0;
+    if (num == NULL) {
+        return 1;
+    }
+    if (num[0] == '-' || num[0] == '+') {
+        i = 1;
+    }
+    for (i; i < strlen(num); i++) {
+        if (num[i] < '0' || num[i] > '9') {
+            return 1;
+        }
     }
     return 0;
 }

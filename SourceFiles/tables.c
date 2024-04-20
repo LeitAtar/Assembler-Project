@@ -39,8 +39,10 @@ int insertToSymbolTable(symbol_list **head, char *symbol, int value, char *ident
     }
     if (strcmp(symbol, "r0") == 0 || strcmp(symbol, "r1") == 0 || strcmp(symbol, "r2") == 0
     || strcmp(symbol, "r3") == 0 || strcmp(symbol, "r4") == 0 || strcmp(symbol, "r5") == 0
-    || strcmp(symbol, "r6") == 0 || strcmp(symbol, "r7") == 0) {
-        printf("Error: symbol is a register");
+    || strcmp(symbol, "r6") == 0 || strcmp(symbol, "r7") == 0 || strcmp(symbol, ".define") == 0
+    || strcmp(symbol, ".entry") == 0 || strcmp(symbol, ".extern") == 0 || strcmp(symbol, ".data") == 0
+    || strcmp(symbol, ".string") == 0 || search_command(symbol) != -1) {
+        printf("Error: symbol is a saved word (command or directive or register)");
         free(newSymbol);
         newSymbol = NULL;
         free(temp_symbol);
