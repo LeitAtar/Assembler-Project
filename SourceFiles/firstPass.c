@@ -61,7 +61,7 @@ int exe_first_pass(char *file_name) {
                 if (strcmp(token, ".define") != 0) { //if not define statement move to 5
                     if (strcasecmp(token, ".define") == 0) { //wrong define definition
                         error_flag = 1;
-                        printf("wrong define definition\n");
+                        printf("Error: wrong define syntax | line:%d\n", line_counter);
                     }
                     algoCounter = 5;
                     break;
@@ -71,12 +71,12 @@ int exe_first_pass(char *file_name) {
                 value = atoi(strtok(NULL, "= \t"));
                 if (value == 0) { //failed to read the value
                     error_flag = 1;
-                    printf("failed to read the value\n");
+                    printf("Error: failed to read a value | line:%d\n", line_counter);
                 }
                 value = insertToSymbolTable(&symbol_table, token, value, ".mdefine", 0);
                 if (value == 1) { //failed to insert symbol
                     error_flag = 1;
-                    printf("failed to insert symbol\n");
+                    printf("Error: failed to insert symbol | line:%d\n", line_counter);
                 }
 
                 algoCounter = 2;
@@ -125,10 +125,10 @@ int exe_first_pass(char *file_name) {
                         value = insertToSymbolTable(&symbol_table, token, DC, ".data", 0);
                         if (value == 1) { //failed to insert label
                             error_flag = 1;
-                            printf("failed to insert label\n");
+                            printf("Error: failed to insert a label | line:%d\n", line_counter);
                         }
                     } else {
-                        printf("entry label warning\n");
+                        printf("Warning: entry label | line:%d\n", line_counter);
                     }
                 }
             case 9:
@@ -167,7 +167,7 @@ int exe_first_pass(char *file_name) {
                 }
                 else {
                     error_flag = 1;
-                    printf("error message\n");
+                    printf("Error: can't recognise a command | line:%d\n", line_counter);
                 }
 
                 algoCounter = 2;
@@ -184,7 +184,7 @@ int exe_first_pass(char *file_name) {
                     while (token != NULL) {
                         if (insertToSymbolTable(&symbol_table, token, 0, ".external", 0) == 1) { //failed to insert label
                             error_flag = 1;
-                            printf("failed to insert label\n");
+                            printf("Error: failed to insert a label | line:%d\n", line_counter);
                         }
                         token = strtok(NULL, ", \n \t");
                     }
@@ -193,14 +193,14 @@ int exe_first_pass(char *file_name) {
                     while (token != NULL) {
                         if (insertToSymbolTable(&symbol_table, token, -1, ".entry", 1) == 1) { //failed to insert label
                             error_flag = 1;
-                            printf("failed to insert label\n");
+                            printf("Error: failed to insert a label | line:%d\n", line_counter);
                         }
                         token = strtok(NULL, ", \n \t");
                     }
                 }
                 else {
                     error_flag = 1;
-                    printf("error message case 11\n");
+                    printf("Error: can't recognise a command | line:%d\n", line_counter);
                 }
                 algoCounter = 2;
                 break;
@@ -210,7 +210,7 @@ int exe_first_pass(char *file_name) {
                     token = strtok(temp, ":"); //label name
                     if (insertToSymbolTable(&symbol_table, token, IC + 100, ".code", 0) == 1) { //failed to insert label
                         error_flag = 1;
-                        printf("failed to insert label\n");
+                        printf("Error: failed to insert a label | line:%d\n", line_counter);
                     }
                 }
 
@@ -223,7 +223,7 @@ int exe_first_pass(char *file_name) {
                 value = search_command(token);
                 if (value == -1) { //not a command
                     error_flag = 1;
-                    printf("not a command\n");
+                    printf("Error: can't recognise a command | line:%d\n", line_counter);
                 }
             case 14:
                 strcpy(temp, str); //copy the string to temp
@@ -237,7 +237,7 @@ int exe_first_pass(char *file_name) {
                 L = findL(token);
                 if (L == -1) { //failed to find L
                     error_flag = 1;
-                    printf("failed to find L\n");
+                    printf("Error: can't recognise a command | line:%d\n", line_counter);
                 }
 
                 strcpy(temp, str); //copy the string to temp

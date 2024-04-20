@@ -333,11 +333,17 @@ int search_command(char *token) {
 int check_operand(char *token) {
 
     if (token == NULL) {
+        printf("Error: missing operand");
         return -1;
     }
 
     if (token[0] == '#') {
         return 0;
+    }
+
+    if (token[0] == '-' || token[0] == '+' || (token[0] >= '0' && token[0] <= '9')) {
+        printf("Error: immediate operand missing #");
+        return -1;
     }
 
     if (strchr(token, '[') != NULL && strchr(token, ']') != NULL) {
