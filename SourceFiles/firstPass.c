@@ -16,7 +16,7 @@ extern macro_list *mcr_table;
 int exe_first_pass(char *file_name) {
     int algoCounter = 1, IC, DC, label_flag = 0, value = 0, error_flag = 0, L = 0, line_counter = 0;
     char *token = malloc(MAX_LINE_LENGTH);
-    char *str, *temp;
+    char *str, *temp, *ptr;
 
     FILE *fp = fopen(file_name, "r");
     FILE *machine = fopen("temp____", "w");
@@ -67,16 +67,26 @@ int exe_first_pass(char *file_name) {
                     break;
                 }
             case 4:
-                token = strtok(NULL, " \t"); //definition name
-                value = atoi(strtok(NULL, "= \t"));
-                if (value == 0) { //failed to read the value
+                if (strstr(str, ":") != NULL) { //if there's a label
+                    error_flag = 1;
+                    printf("Error: label definition on a define command | line:%d\n", line_counter);
+                    algoCounter = 2;
+                    break;
+                }
+                token = strtok(NULL, " \t \n ="); //definition name
+                ptr = strtok(NULL, " \t \n ="); //definition value
+                value = atoi(ptr);
+                if (value == 0 && (strlen(ptr) != 1 ||ptr[0] != '0')) { //failed to read the value
                     error_flag = 1;
                     printf("Error: failed to read a value | line:%d\n", line_counter);
+
+                    algoCounter = 2;
+                    break;
                 }
                 value = insertToSymbolTable(&symbol_table, token, value, ".mdefine", 0);
-                if (value == 1) { //failed to insert symbol
+                if (value == 1) { /*failed to insert symbol*/
                     error_flag = 1;
-                    printf("Error: failed to insert symbol | line:%d\n", line_counter);
+                    printf(" | line:%d\n", line_counter);
                 }
 
                 algoCounter = 2;
@@ -125,7 +135,7 @@ int exe_first_pass(char *file_name) {
                         value = insertToSymbolTable(&symbol_table, token, DC, ".data", 0);
                         if (value == 1) { //failed to insert label
                             error_flag = 1;
-                            printf("Error: failed to insert a label | line:%d\n", line_counter);
+                            printf(" | line:%d\n", line_counter);
                         }
                     } else {
                         printf("Warning: entry label | line:%d\n", line_counter);
@@ -158,6 +168,12 @@ int exe_first_pass(char *file_name) {
                 else if (strcmp(token, ".string") == 0) {
                     token = strtok(NULL, " \t");
                     token = string_to_binary(token);
+                    if (token == NULL) {
+                        error_flag = 1;
+                        printf(" | line:%d\n", line_counter);
+                        algoCounter = 2;
+                        break;
+                    }
                     fprintf(machine, "%s", token);
                     strcpy(temp, str);
                     token = strtok(temp, ".");
@@ -184,7 +200,7 @@ int exe_first_pass(char *file_name) {
                     while (token != NULL) {
                         if (insertToSymbolTable(&symbol_table, token, 0, ".external", 0) == 1) { //failed to insert label
                             error_flag = 1;
-                            printf("Error: failed to insert a label | line:%d\n", line_counter);
+                            printf(" | line:%d\n", line_counter);
                         }
                         token = strtok(NULL, ", \n \t");
                     }
@@ -193,7 +209,7 @@ int exe_first_pass(char *file_name) {
                     while (token != NULL) {
                         if (insertToSymbolTable(&symbol_table, token, -1, ".entry", 1) == 1) { //failed to insert label
                             error_flag = 1;
-                            printf("Error: failed to insert a label | line:%d\n", line_counter);
+                            printf(" | line:%d\n", line_counter);
                         }
                         token = strtok(NULL, ", \n \t");
                     }
@@ -205,12 +221,13 @@ int exe_first_pass(char *file_name) {
                 algoCounter = 2;
                 break;
             case 12: //done
+
                 if (label_flag == 1) {
                     strcpy(temp, str); //copy the string to temp
                     token = strtok(temp, ":"); //label name
                     if (insertToSymbolTable(&symbol_table, token, IC + 100, ".code", 0) == 1) { //failed to insert label
                         error_flag = 1;
-                        printf("Error: failed to insert a label | line:%d\n", line_counter);
+                        printf(" | line:%d\n", line_counter);
                     }
                 }
 

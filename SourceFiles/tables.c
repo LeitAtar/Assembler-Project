@@ -10,10 +10,13 @@
 #include "../HeaderFiles/preAssembler.h"
 #include "../HeaderFiles/convertToBaseFour.h"
 
+extern symbol_list *symbol_table;
+extern macro_list *mcr_table;
+
 int insertToSymbolTable(symbol_list **head, char *symbol, int value, char *identifier, int is_entry) {
-    char *temp_symbol = malloc(100);
+    char *temp_symbol = malloc(strlen(symbol) + 1);
     strcpy(temp_symbol, symbol);
-    char *temp_identifier = malloc(100);
+    char *temp_identifier = malloc(strlen(identifier) + 1);
     strcpy(temp_identifier, identifier);
 
     symbol_list *temp = *head;
@@ -24,12 +27,33 @@ int insertToSymbolTable(symbol_list **head, char *symbol, int value, char *ident
     newSymbol->is_entry = is_entry;
     newSymbol->next = NULL;
 
+    if (isInMacroTable(mcr_table, symbol) != NULL) {
+        printf("Error: symbol is a macro");
+        free(newSymbol);
+        newSymbol = NULL;
+        free(temp_symbol);
+        temp_symbol = NULL;
+        free(temp_identifier);
+        temp_identifier = NULL;
+        return 1;
+    }
+    if (strcmp(symbol, "r0") == 0 || strcmp(symbol, "r1") == 0 || strcmp(symbol, "r2") == 0
+    || strcmp(symbol, "r3") == 0 || strcmp(symbol, "r4") == 0 || strcmp(symbol, "r5") == 0
+    || strcmp(symbol, "r6") == 0 || strcmp(symbol, "r7") == 0) {
+        printf("Error: symbol is a register");
+        free(newSymbol);
+        newSymbol = NULL;
+        free(temp_symbol);
+        temp_symbol = NULL;
+        free(temp_identifier);
+        temp_identifier = NULL;
+        return 1;
+    }
 
     if (temp == NULL) {
         *head = newSymbol;
         return 0;
     }
-
 
     /*find the end of the list*/
     while ((temp)->next != NULL) {
@@ -40,13 +64,17 @@ int insertToSymbolTable(symbol_list **head, char *symbol, int value, char *ident
                 temp->identifier = temp_identifier;
                 return 0;
             }
-            if (strcmp(identifier, ".entry") == 0)
-            {
-                //temp->identifier = temp_identifier;
+            if (strcmp(identifier, ".entry") == 0 && temp->is_entry == 0) {
                 temp->is_entry = 1;
                 return 0;
             }
-            printf("symbol already exists error\n");
+            printf("Error: symbol already exists");
+            free(newSymbol);
+            newSymbol = NULL;
+            free(temp_symbol);
+            temp_symbol = NULL;
+            free(temp_identifier);
+            temp_identifier = NULL;
             return 1;
         }
         temp = (temp)->next;

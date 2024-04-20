@@ -215,16 +215,19 @@ int insertToMacroTable(macro_list **table, char *mcro_name, char *content) {
         }
         strcat(node->content, content);
         node->line_amount++;
-    } else {
-        macro_list *new_node = malloc(1000); // to change later from 1000
+    }
+    else {
+        macro_list *new_node = malloc(sizeof(macro_list)); /*Allocate memory based on size of macro_list*/
         if (new_node == NULL) {
             // Handle memory allocation failure
+            free(new_node);
+            new_node = NULL;
             return -1;
         }
-        new_node->name = malloc(MAX_LINE_LENGTH); // +1 for null terminator
+        new_node->name = malloc(strlen(mcro_name) + 1); /*Allocate memory based on length of mcro_name*/
         strcpy(new_node->name, mcro_name);
 
-        new_node->content = malloc(MAX_LINE_LENGTH); // +1 for null terminator
+        new_node->content = malloc(strlen(content) + 1); /*Allocate memory based on length of content*/
         strcpy(new_node->content, content);
 
         new_node->line = 0;
@@ -342,7 +345,7 @@ int check_operand(char *token) {
     }
 
     if (token[0] == '-' || token[0] == '+' || (token[0] >= '0' && token[0] <= '9')) {
-        printf("Error: immediate operand missing #");
+        printf("Error: immediate operand doesn't have a '#'");
         return -1;
     }
 
@@ -762,25 +765,28 @@ int ext_file_creator(char *file_name) {
     fp = fopen(file_name, "r");
     if(fp == NULL)
     {
-        printf("Error: couldn't find file: %s", file_name); // make an error message later
+        printf("Error: couldn't find file: %s\n", file_name); // make an error message later
         return 1;
     }
     line = malloc(MAX_LINE_LENGTH);
     temp_line = malloc(MAX_LINE_LENGTH);
-    token = malloc(MAX_LINE_LENGTH);
-    symbol_list *node = symbol_table;
-    strcpy(token, "");
-    strcpy(token, file_name);
-    token = strtok(token, ".");
-    strcat(token, ".ext");
-    temp = fopen(token, "w");
+    symbol_list *node;
+    strcpy(temp_line, file_name);
+    token = strtok(temp_line, ".");
+    strcpy(temp_line, token);
+    strcat(temp_line, ".ext");
+    temp = fopen(temp_line, "w");
     if(temp == NULL)
     {
-        printf("Error: couldn't generate .ext file: %s", file_name); // make an error message later
+        printf("Error: couldn't generate .ext file: %s\n", file_name);
+        free(line);
+        line = NULL;
+        free(temp_line);
+        temp_line = NULL;
+        fclose(fp);
         return 1;
     }
-    printf("Generating .ext file for: %s\n", token);
-    strcpy(token, "");
+    printf("Generating .ext file for: %s\n", file_name);
     while(algo_counter != 0)
     {
         switch (algo_counter)
@@ -844,14 +850,16 @@ int ext_file_creator(char *file_name) {
                 algo_counter = 1;
                 break;
             default:
-                printf("error message"); // make an error message later
+                printf("error message");
                 return 1;
         }
     }
     fclose(temp);
     fclose(fp);
-    free(token);
     free(line);
+    line = NULL;
+    free(temp_line);
+    temp_line = NULL;
     return 0;
 }
 
@@ -912,37 +920,6 @@ char* data_to_binary (char* line) {
     return final;
 }
 
-/*
-char* string_to_binary (char* line) {
-    char binary_line[16];
-    char* final = malloc(1000);
-    char* token;
-    char* temp = malloc(200);
-    int i = 0;
-
-    strcpy(final, "");
-
-    strcpy(temp, line);
-    token = strtok(temp, " \t , \n");
-    if (token == NULL) {
-        printf("Error: string is empty\n");
-        free(final);
-        free(temp);
-        return NULL;
-    }
-
-    for (i = 3; i < strlen(token) - 3; i++) {
-        strcpy(binary_line, "");
-        temp = decimalToBinary(token[i], 14);
-        strcat(binary_line, temp);
-        free(temp);
-        strcat(binary_line, "\n");
-        strcat(final, binary_line);
-    }
-    strcat(final, "00000000000000\n");
-    return final;
-}*/
-
 char* string_to_binary (char* line) {
     char binary_line[16];
     char* final = calloc(17, sizeof(char));
@@ -953,7 +930,7 @@ char* string_to_binary (char* line) {
     strcpy(final, "");
     strcpy(temp, line);
     if (strtok(temp, " \t , \n") == NULL) {
-        printf("Error: string is empty\n");
+        printf("Error: string is empty");
         free(final);
         final = NULL;
         free(temp);
@@ -962,7 +939,14 @@ char* string_to_binary (char* line) {
     }
     strcpy(temp, line);
     strcpy(token, strtok(temp, " \t , \n"));
-
+    free(temp);
+    temp = NULL;
+    if (token[0] != '"' || token[strlen(token) - 1] != '"') {
+        printf("Error: string is not in quotes");
+        free(final);
+        final = NULL;
+        return NULL;
+    }
     for (i = 1; i < strlen(token) - 1; i++) {
         strcpy(binary_line, "");
         temp = decimalToBinary(token[i], 14);
@@ -973,7 +957,7 @@ char* string_to_binary (char* line) {
         strcat(final, binary_line);
         final = realloc(final, strlen(final) + 16 * sizeof (char));
         if (final == NULL) {
-            printf("Memory re-allocation failed\n");
+            printf("Error: Memory re-allocation failed");
             return NULL;
         }
     }
