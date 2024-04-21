@@ -1,8 +1,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include "../HeaderFiles/firstPass.h"
-#include "../HeaderFiles/preAssembler.h"
+#include "../HeaderFiles/first_pass.h"
+#include "../HeaderFiles/pre_assembler.h"
 
 int main(int argc, char *argv[]) {
     char *file_name = malloc(FILENAME_MAX);

@@ -1,0 +1,36 @@
+# Compilation macros
+ CC = gcc
+ CFLAGS = -ansi -Wall -pedantic -g # Flags
+ GLOBAL_DEPS = globals.h # Dependencies for everything
+ EXE_DEPS = assembler.o  utilities.o tables.o pre_assembler.o first_pass.o second_pass.o convert_to_base_four.o # Dependencies for the executable
+
+ ## Executable
+assembler: $(EXE_DEPS) $(GLOBAL_DEPS)
+	$(CC) -g $(EXE_DEPS) $(CFLAGS) -o $@
+
+assembler.o:  ../SourceFiles $(GLOBAL_DEPS)
+	$(CC) -c assembler.c $(CFLAGS) -o $@
+
+preproc.o: ../SourceFiles Header $(GLOBAL_DEPS)
+	$(CC) -c pre_assembler.c $(CFLAGS) -o $@
+
+first_pass.o: ../SourceFiles Header $(GLOBAL_DEPS)
+	$(CC) -c first_pass.c $(CFLAGS) -o $@
+
+second_pass.o: ../SourceFiles Header $(GLOBAL_DEPS)
+	$(CC) -c second_pass.c $(CFLAGS) -o $@
+
+code_conversion.o: ../SourceFiles Header $(GLOBAL_DEPS)
+	$(CC) -c convert_to_base_four.c $(CFLAGS) -o $@
+
+tables.o: ../SourceFiles Header $(GLOBAL_DEPS)
+	$(CC) -c tables.c $(CFLAGS) -o $@
+
+utilities.o: ../SourceFiles Header $(GLOBAL_DEPS)
+	$(CC) -c utilities.c $(CFLAGS) -o $@
+
+# Phony targets
+.PHONY: clean
+
+clean:
+	rm -rf *.o *.am *.ob *.ent *.ext

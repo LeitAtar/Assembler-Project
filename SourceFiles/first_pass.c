@@ -3,9 +3,9 @@
 #include <string.h>
 #include "../HeaderFiles/globals.h"
 #include "../HeaderFiles/tables.h"
-#include "../HeaderFiles/firstPass.h"
+#include "../HeaderFiles/first_pass.h"
 #include "../HeaderFiles/utilities.h"
-#include "../HeaderFiles/secondPass.h"
+#include "../HeaderFiles/second_pass.h"
 
 extern symbol_list *symbol_table;
 extern macro_list *mcr_table;

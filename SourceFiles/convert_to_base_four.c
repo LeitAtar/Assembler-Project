@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "../HeaderFiles/globals.h"
-#include "../HeaderFiles/convertToBaseFour.h"
+#include "../HeaderFiles/convert_to_base_four.h"
 
 
 int encrypt(char *file_name) {

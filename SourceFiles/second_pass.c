@@ -4,8 +4,8 @@
 #include "../HeaderFiles/globals.h"
 #include "../HeaderFiles/tables.h"
 #include "../HeaderFiles/utilities.h"
-#include "../HeaderFiles/secondPass.h"
-#include "../HeaderFiles/convertToBaseFour.h"
+#include "../HeaderFiles/second_pass.h"
+#include "../HeaderFiles/convert_to_base_four.h"
 
 extern symbol_list *symbol_table;
 extern macro_list *mcr_table;

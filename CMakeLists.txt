@@ -3,19 +3,19 @@ project(AssemblerPersonal C)
 
 set(CMAKE_C_STANDARD 90)
 
-add_executable(AssemblerPersonal SourceFiles/main.c
-        SourceFiles/convertToBaseFour.c
-        SourceFiles/firstPass.c
+add_executable(AssemblerPersonal SourceFiles/assembler.c
+        SourceFiles/convert_to_base_four.c
+        SourceFiles/first_pass.c
         HeaderFiles/globals.h
         SourceFiles/tables.c
         HeaderFiles/tables.h
-        SourceFiles/preAssembler.c
-        HeaderFiles/preAssembler.h
-        SourceFiles/secondPass.c
-        HeaderFiles/secondPass.h
+        SourceFiles/pre_assembler.c
+        HeaderFiles/pre_assembler.h
+        SourceFiles/second_pass.c
+        HeaderFiles/second_pass.h
         SourceFiles/utilities.c
         SourceFiles/utilities.c
         HeaderFiles/utilities.h
-        HeaderFiles/firstPass.h
-        HeaderFiles/convertToBaseFour.h
+        HeaderFiles/first_pass.h
+        HeaderFiles/convert_to_base_four.h
 )
