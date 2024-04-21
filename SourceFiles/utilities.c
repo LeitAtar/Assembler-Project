@@ -13,7 +13,7 @@ char* decimal_to_binary(int num, int length) {
     char binaryLine[WORD_LENGTH];
     char *reverse_binaryLine;
     char *ones;
-    int j = 0, k = 0;
+    int j, k, i = 0;
     int is_negative = (num < 0) ? 1 : 0;
     num = abs(num);
 
@@ -22,7 +22,6 @@ char* decimal_to_binary(int num, int length) {
         return NULL;
     }
     /*Counter for binary array*/
-    int i = 0;
     while (num > 0) {
         /* Store remainder in binary array*/
         binaryLine[i] = (char) (num % 2 + '0');
@@ -85,9 +84,11 @@ char* decimal_to_binary(int num, int length) {
 int find_L(char *line)
 {
     char temp_line[MAX_LINE_LENGTH];
+    char *token;
+    int L = 0, i, is_quote = 0, second_r = 0;
+
     strcpy(temp_line, line);
-    char *token = strtok(temp_line, ", \t");
-    int L = 0, i = 0, is_quote = 0, second_r = 0;
+    token = strtok(temp_line, ", \t");
 
     while(token != NULL)
     {
@@ -97,7 +98,7 @@ int find_L(char *line)
         }
         else if(strcmp(token, ".data") == 0 || strcmp(token, ".entry") == 0 || strcmp(token, ".extern") == 0)
         {
-            L; /*dont change the L value*/
+            L = L; /*dont change the L value*/
         }
         else if(strcmp(token, ".string") == 0)
         {
@@ -213,7 +214,7 @@ char *to_binary (char *line) {
     char *temp = malloc(MAX_LINE_LENGTH);
     int value;
     int command;
-    int i, j, operands = 1;
+    int i, j, operands;
     symbol_list *node;
 
     strcpy(temp, line);
@@ -420,7 +421,7 @@ char *to_binary (char *line) {
         }
         free(temp);
         temp = NULL;
-        for (j; j < 2; ++j) {
+        for (; j < 2; ++j) {
             strcpy(binary_line, "");
             temp = malloc(MAX_LINE_LENGTH);
             switch (value) {
@@ -524,7 +525,7 @@ char *to_binary (char *line) {
                     strcpy(binary_line, "");
                     /*now index*/
                     strcpy(temp, op);
-                    token = strtok(temp, "[");
+                    strtok(temp, "[");
                     token = strtok(NULL, "]");
                     value = atoi(token);
                     if (num_check(token) != 0){
@@ -621,7 +622,7 @@ int ext_file_creator(char *file_name) {
     FILE *fp;
     FILE *temp;
     char *token, *line, *temp_line;
-    int algo_counter = 1, IC = IC_INITIAL, first_register = 0;
+    int algo_counter = 1, IC = IC_INITIAL, first_register;
     fp = fopen(file_name, "r");
     if(fp == NULL)
     {
@@ -676,7 +677,7 @@ int ext_file_creator(char *file_name) {
             case 3:
                 if(strstr(temp_line, ":") != NULL)
                 {
-                    token = strtok(temp_line, ":");
+                    strtok(temp_line, ":");
                     token = strtok(NULL, " \t\n");
                 }
                 else
@@ -785,7 +786,7 @@ char* string_to_binary (char* line) {
     char* final = calloc(WORD_LENGTH + 1, sizeof(char));
     char token[MAX_LINE_LENGTH];
     char* temp = malloc(MAX_LINE_LENGTH);
-    int i = 0;
+    int i;
 
     strcpy(final, "");
     strcpy(temp, line);
@@ -861,7 +862,7 @@ int num_check(char* num) {
     if (num[0] == '-' || num[0] == '+') {
         i = 1;
     }
-    for (i; i < strlen(num); i++) {
+    for (; i < strlen(num); i++) {
         if (num[i] < '0' || num[i] > '9') {
             return 1;
         }

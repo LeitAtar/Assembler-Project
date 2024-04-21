@@ -8,10 +8,10 @@
 int encrypt(char *file_name) {
     FILE *fp = fopen(file_name, "r");
     FILE *final;
-    final = fopen("temp____", "w");
     char currentNum[WORD_LENGTH];
     char *baseFourNum;
 
+    final = fopen("temp____", "w");
     if (fp == NULL) {
         printf("Error opening file.\n");
         fclose(final);
@@ -36,7 +36,7 @@ int encrypt(char *file_name) {
 }
 
 char* convertToBaseFour(const char *str) {
-    int i = 0;
+    int i;
     int j = 0;
     char *newStr = malloc(BASE_FOUR_WORD); /*Allocate memory for the string*/
 

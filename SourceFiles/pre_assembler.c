@@ -9,12 +9,13 @@ extern macro_list *mcr_table;
 int exe_pre_assembler(char *file_name) {
     FILE *fp, *fp2;
     char *token;
-    int line_counter = 0, is_mcr = 0, error_flag = 0;
+    int line_counter = 0, is_mcr = 0, error_flag = 0, algo_counter;
     char *mcro_name = calloc(MAX_LINE_LENGTH, sizeof(char)),
             *line = calloc(MAX_LINE_LENGTH, sizeof(char)),
             *temp_line = calloc(MAX_LINE_LENGTH, sizeof(char));
-    mcr_table = NULL;
     macro_list *node = NULL;
+
+    mcr_table = NULL;
     fp = fopen(file_name, "r");
     strcpy(temp_line, file_name);
     token = strtok(temp_line, ".");
@@ -26,7 +27,7 @@ int exe_pre_assembler(char *file_name) {
         return 1;
     }
 
-    int algo_counter = 1;
+    algo_counter = 1;
     while(algo_counter != 0)
     {
         switch (algo_counter) {

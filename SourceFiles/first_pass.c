@@ -11,9 +11,10 @@ extern symbol_list *symbol_table;
 extern macro_list *mcr_table;
 
 int exe_first_pass(char *file_name) {
-    int algoCounter = 1, IC, DC, label_flag = 0, value = 0, error_flag = 0, L = 0, line_counter = 0;
+    int algoCounter = 1, IC, DC, label_flag = 0, value, error_flag = 0, L, line_counter = 0;
     char *token = malloc(MAX_LINE_LENGTH);
     char *str, *temp, *ptr;
+    symbol_list *node;
 
     FILE *fp = fopen(file_name, "r");
     FILE *machine = fopen("temp____", "w");
@@ -29,7 +30,6 @@ int exe_first_pass(char *file_name) {
     free(token);
     token = NULL;
     symbol_table = NULL;
-    symbol_list *node;
 
     while(algoCounter != 0) {
         switch (algoCounter) {
@@ -152,8 +152,8 @@ int exe_first_pass(char *file_name) {
                     free(token);
                     token = NULL;
                     strcpy(temp, str);
-                    token = strtok(temp, ".");
-                    token = strtok(NULL, " \t");
+                    strtok(temp, ".");
+                    strtok(NULL, " \t");
                     token = strtok(NULL, " \t");
 
                     while (token != NULL) {
@@ -172,8 +172,8 @@ int exe_first_pass(char *file_name) {
                     }
                     fprintf(machine, "%s", token);
                     strcpy(temp, str);
-                    token = strtok(temp, ".");
-                    token = strtok(NULL, " \t\n");
+                    strtok(temp, ".");
+                    strtok(NULL, " \t\n");
                     token = strtok(NULL, " \t \n \" ");
                     DC += (int) strlen(token) + 1;
                 }
@@ -240,7 +240,7 @@ int exe_first_pass(char *file_name) {
             case 14:
                 strcpy(temp, str);
                 if (strstr(temp, ":") != NULL) { /*skip label*/
-                    token = strtok(temp, ":");
+                    strtok(temp, ":");
                     token = strtok(NULL, ":\n");
                 }
                 else {
@@ -254,7 +254,7 @@ int exe_first_pass(char *file_name) {
 
                 strcpy(temp, str);
                 if (strstr(temp, ":") !=NULL) { /*skip label*/
-                    token = strtok(temp, ":");
+                    strtok(temp, ":");
                     token = strtok(NULL, ":");
                 }
                 else {

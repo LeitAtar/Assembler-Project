@@ -9,12 +9,13 @@ macro_list *mcr_table;
 
 int insert_to_symbol_table(symbol_list **head, char *symbol, int value, char *identifier, int is_entry) {
     char *temp_symbol = malloc(strlen(symbol) + 1);
-    strcpy(temp_symbol, symbol);
     char *temp_identifier = malloc(strlen(identifier) + 1);
+    symbol_list *newSymbol = malloc(sizeof(symbol_list));
+    symbol_list *temp = *head;
+
+    strcpy(temp_symbol, symbol);
     strcpy(temp_identifier, identifier);
 
-    symbol_list *temp = *head;
-    symbol_list *newSymbol = malloc(sizeof(symbol_list));
     newSymbol->symbol = temp_symbol;
     newSymbol->value = value;
     newSymbol->identifier = temp_identifier;

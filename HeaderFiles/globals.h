@@ -16,13 +16,6 @@
 /* Default IC value */
 #define IC_INITIAL 100
 
-/* arbitrary very big number for line length */
-#define BIG_NUMBER_CONST 1000
-
-#define OPCODES_COUNT 16
-
-#define REG_COUNT 8
-
 #define WORD_LENGTH 16
 #define BASE_FOUR_WORD 8
 

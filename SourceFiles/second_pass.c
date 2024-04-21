@@ -12,15 +12,16 @@ extern macro_list *mcr_table;
 
 int exe_second_pass(char *file_name, int IC, int DC)
 {
-    printf("Starting second pass on file: %s\n", file_name);
     symbol_list *node;
     FILE *fp, *machine;
     char *after_first_pass = malloc(MAX_LINE_LENGTH);
-    strcpy(after_first_pass, "temp____");
     char *line = malloc(MAX_LINE_LENGTH);
     char *temp_line;
     char *token = malloc(MAX_LINE_LENGTH);
     int line_counter = 0, error_flag = 0, external_flag = 0, entry_flag = 0;
+
+    printf("Starting second pass on file: %s\n", file_name);
+    strcpy(after_first_pass, "temp____");
     fp = fopen(after_first_pass, "r");
     strcpy(token, file_name);
     token = strtok(token, ".");
