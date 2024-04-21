@@ -339,7 +339,6 @@ int exe_first_pass(char *file_name) {
     str = NULL;
     free(temp);
     temp = NULL;
-    /*free(token);*/
     token = NULL;
 
     mcr_node = mcr_table;
