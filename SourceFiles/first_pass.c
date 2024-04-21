@@ -51,6 +51,12 @@ int exe_first_pass(char *file_name) {
                     algoCounter = 2;
                     break;
                 }
+                if (strlen(str) > MAX_LINE_LENGTH) { /*line too long*/
+                    error_flag = 1;
+                    printf("Error: line too long | line:%d\n", line_counter);
+                    algoCounter = 2;
+                    break;
+                }
 
             case 3:
                 strcpy(temp, str); /*copy the string to temp*/

@@ -77,6 +77,7 @@ char* decimal_to_binary(int num, int length) {
     }
     strcat(ones, reverse_binaryLine);
     free(reverse_binaryLine);
+    reverse_binaryLine = NULL;
     return ones;
 }
 
@@ -208,7 +209,7 @@ char *to_binary (char *line) {
     char *binary_line = malloc(WORD_LENGTH);
     char *final = malloc(WORD_LENGTH * 5); /*each line is a maximum of five binary words*/
     char *token;
-    char *op1 = malloc(MAX_LINE_LENGTH);
+    char *op1 = malloc(MAX_LINE_LENGTH + 15);
     char *op2 = malloc(MAX_LINE_LENGTH);
     char *op;
     char *temp = malloc(MAX_LINE_LENGTH);
@@ -216,6 +217,7 @@ char *to_binary (char *line) {
     int command;
     int i, j, operands;
     symbol_list *node;
+
 
     strcpy(temp, line);
     token = strtok(temp, " \t");
@@ -397,12 +399,12 @@ char *to_binary (char *line) {
 
     if (check_operand(op1) == 3 && operands == 2 && check_operand(op2) == 3) {
         strcpy(binary_line, "000000");
-        value = op1[1] - '0';
+        value = (int) (op1[1] - '0');
         token = decimal_to_binary(value,3);
         strcat(binary_line, token);
         free(token);
         token = NULL;
-        value = op2[1] - '0';
+        value = (int) (op2[1] - '0');
         token = decimal_to_binary(value,3);
         strcat(binary_line, token);
         free(token);
@@ -427,7 +429,7 @@ char *to_binary (char *line) {
             switch (value) {
                 case 0: /*immediate*/
                     strcpy(temp, op);
-                    token = strtok(temp, "#\n");
+                    token = strtok(temp, "#\n\r");
                     if (token == NULL) {
                         printf("Error: invalid immediate operand");
                         free(op1);
