@@ -18,4 +18,5 @@ add_executable(AssemblerPersonal SourceFiles/assembler.c
         HeaderFiles/utilities.h
         HeaderFiles/first_pass.h
         HeaderFiles/convert_to_base_four.h
+        MakeFile
 )
