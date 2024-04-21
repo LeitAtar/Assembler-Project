@@ -99,7 +99,7 @@ int find_L(char *line)
         }
         else if(strcmp(token, ".data") == 0 || strcmp(token, ".entry") == 0 || strcmp(token, ".extern") == 0)
         {
-            L = L; /*dont change the L value*/
+            L = L; /*don't change the value of L*/
         }
         else if(strcmp(token, ".string") == 0)
         {
