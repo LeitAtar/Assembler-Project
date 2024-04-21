@@ -107,7 +107,7 @@ int find_L(char *line)
         }
         else if(is_quote)
         {
-            for(i = 0; i <= strlen(token) - 6; i++)
+            for(i = 0; i <= strlen(token) - 2; i++)
             {
                 L++;
             }
@@ -800,6 +800,15 @@ char* string_to_binary (char* line) {
     char token[MAX_LINE_LENGTH];
     char* temp = malloc(MAX_LINE_LENGTH);
     int i;
+
+    if (line == NULL) {
+        printf("Error: string is empty");
+        free(final);
+        final = NULL;
+        free(temp);
+        temp = NULL;
+        return NULL;
+    }
 
     strcpy(final, "");
     strcpy(temp, line);
