@@ -722,8 +722,8 @@ int ext_file_creator(char *file_name) {
         printf("Error: couldn't find file: %s\n", file_name);
         return 1;
     }
-    line = malloc(MAX_LINE_LENGTH);
-    temp_line = malloc(MAX_LINE_LENGTH);
+    line = calloc(MAX_LINE_LENGTH, sizeof(char));
+    temp_line = calloc(MAX_LINE_LENGTH, sizeof(char));
     strcpy(temp_line, file_name);
     token = strtok(temp_line, ".");
     strcpy(temp_line, token);
@@ -818,9 +818,9 @@ int ext_file_creator(char *file_name) {
 
 char* data_to_binary (char* line) {
     char binary_line[WORD_LENGTH];
-    char* final = calloc(17, sizeof(char));
+    char* final = calloc(WORD_LENGTH + 1, sizeof(char));
     char* token;
-    char* temp = calloc(17, sizeof(char));
+    char* temp = calloc(WORD_LENGTH + 1, sizeof(char));
     int value;
     symbol_list* node;
 
@@ -887,7 +887,7 @@ char* string_to_binary (char* line) {
     char binary_line[WORD_LENGTH];
     char* final = calloc(WORD_LENGTH + 1, sizeof(char));
     char token[MAX_LINE_LENGTH];
-    char* temp = malloc(MAX_LINE_LENGTH);
+    char* temp = calloc(MAX_LINE_LENGTH, sizeof(char));
     int i;
 
     if (line == NULL) {
@@ -934,6 +934,8 @@ char* string_to_binary (char* line) {
         }
     }
     strcat(final, "00000000000000\n");
+    free(temp);
+    temp = NULL;
     return final;
 }
 

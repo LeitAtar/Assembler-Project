@@ -5,7 +5,7 @@
 #include "../HeaderFiles/pre_assembler.h"
 
 int main(int argc, char *argv[]) {
-    char *file_name = malloc(FILENAME_MAX);
+    char *file_name = calloc(FILENAME_MAX, sizeof(char));
     setvbuf(stdout, NULL, _IONBF, 0);
     while (--argc > 0) {
         /* Generate a new file with the ".as" extension by adding it to the input filename.*/

@@ -13,10 +13,10 @@ int exe_second_pass(char *file_name, int IC, int DC)
 {
     symbol_list *node;
     FILE *fp, *machine;
-    char *after_first_pass = malloc(MAX_LINE_LENGTH);
-    char *line = malloc(MAX_LINE_LENGTH);
+    char *after_first_pass = calloc(MAX_LINE_LENGTH, sizeof (char));
+    char *line = calloc(MAX_LINE_LENGTH, sizeof (char));
     char *temp_line;
-    char *token = malloc(MAX_LINE_LENGTH);
+    char *token = calloc(MAX_LINE_LENGTH, sizeof (char));
     int line_counter = 0, error_flag = 0, external_flag = 0, entry_flag = 0;
 
     printf("Starting second pass on file: %s\n", file_name);
@@ -141,7 +141,7 @@ int exe_second_pass(char *file_name, int IC, int DC)
         temp_line = NULL;
         return 1;
     }
-    temp_line = malloc(MAX_LINE_LENGTH);
+    temp_line = calloc(MAX_LINE_LENGTH, sizeof (char));
     strcpy(token, "\t");
     sprintf(temp_line, "%d", IC);
     strcat(token, temp_line);

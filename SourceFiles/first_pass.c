@@ -12,7 +12,7 @@ extern macro_list *mcr_table;
 
 int exe_first_pass(char *file_name) {
     int algoCounter = 1, IC, DC, label_flag = 0, value, error_flag = 0, L, line_counter = 0;
-    char *token = malloc(MAX_LINE_LENGTH);
+    char *token = calloc(MAX_LINE_LENGTH, sizeof(char));
     char *str, *temp, *ptr;
     symbol_list *node;
     macro_list *mcr_node;
@@ -26,7 +26,8 @@ int exe_first_pass(char *file_name) {
         token = NULL;
         return 1;
     }
-    str = malloc(MAX_LINE_LENGTH), temp = malloc(MAX_LINE_LENGTH);
+    str = calloc(MAX_LINE_LENGTH, sizeof (char)),
+    temp = calloc(MAX_LINE_LENGTH, sizeof (char));
 
     free(token);
     token = NULL;

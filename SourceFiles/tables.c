@@ -8,9 +8,9 @@ symbol_list *symbol_table;
 macro_list *mcr_table;
 
 int insert_to_symbol_table(symbol_list **head, char *symbol, int value, char *identifier, int is_entry) {
-    char *temp_symbol = malloc(strlen(symbol) + 1);
-    char *temp_identifier = malloc(strlen(identifier) + 1);
-    symbol_list *newSymbol = malloc(sizeof(symbol_list));
+    char *temp_symbol = calloc(strlen(symbol) + 1, sizeof(char));
+    char *temp_identifier = calloc(strlen(identifier) + 1, sizeof(char));
+    symbol_list *newSymbol = calloc(sizeof(symbol_list), sizeof(char));
     symbol_list *temp = *head;
 
     strcpy(temp_symbol, symbol);
@@ -107,17 +107,17 @@ int insert_to_macro_table(macro_list **table, char *mcro_name, char *content) {
         node->line_amount++;
     }
     else {
-        macro_list *new_node = malloc(sizeof(macro_list)); /*Allocate memory based on size of macro_list*/
+        macro_list *new_node = calloc(sizeof(macro_list), sizeof (char)); /*Allocate memory based on size of macro_list*/
         if (new_node == NULL) {
             /* Handle memory allocation failure*/
             free(new_node);
             new_node = NULL;
             return -1;
         }
-        new_node->name = malloc(strlen(mcro_name) + 1); /*Allocate memory based on length of mcro_name*/
+        new_node->name = calloc(strlen(mcro_name) + 1, sizeof (char)); /*Allocate memory based on length of mcro_name*/
         strcpy(new_node->name, mcro_name);
 
-        new_node->content = malloc(strlen(content) + 1); /*Allocate memory based on length of content*/
+        new_node->content = calloc(strlen(content) + 1, sizeof (char)); /*Allocate memory based on length of content*/
         strcpy(new_node->content, content);
 
         new_node->line = 0;

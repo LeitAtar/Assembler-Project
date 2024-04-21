@@ -11,7 +11,7 @@ SOURCES = $(wildcard SourceFiles/*.c)
 OBJECTS = $(SOURCES:.c=.o)
 
 # Executable name
-EXECUTABLE = AssemblerPersonal
+EXECUTABLE = assemble
 
 # Rule for making the final executable
 $(EXECUTABLE): $(OBJECTS)

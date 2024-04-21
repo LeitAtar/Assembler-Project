@@ -38,7 +38,7 @@ int encrypt(char *file_name) {
 char* convertToBaseFour(const char *str) {
     int i;
     int j = 0;
-    char *newStr = malloc(BASE_FOUR_WORD); /*Allocate memory for the string*/
+    char *newStr = calloc(BASE_FOUR_WORD, sizeof (char)); /*Allocate memory for the string*/
 
     char num[3]; /*Increase size to accommodate null terminator*/
     for (i = 0; i < BASE_FOUR_WORD - 1; ++i, j += 2) {
