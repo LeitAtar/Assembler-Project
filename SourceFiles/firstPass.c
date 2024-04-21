@@ -1,14 +1,11 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include "../HeaderFiles/DataStructures.h"
 #include "../HeaderFiles/globals.h"
 #include "../HeaderFiles/tables.h"
 #include "../HeaderFiles/firstPass.h"
 #include "../HeaderFiles/utilities.h"
 #include "../HeaderFiles/secondPass.h"
-#include "../HeaderFiles/preAssembler.h"
-#include "../HeaderFiles/convertToBaseFour.h"
 
 extern symbol_list *symbol_table;
 extern macro_list *mcr_table;
@@ -36,30 +33,30 @@ int exe_first_pass(char *file_name) {
 
     while(algoCounter != 0) {
         switch (algoCounter) {
-            case 1: //done
+            case 1:
                 IC = 0;
                 DC = 0;
-            case 2: //done
+            case 2:
                 if (feof(fp)) {
                     algoCounter = 16;
                     break;
                 }
 
                 fgets(str, MAX_LINE_LENGTH, fp);
-                label_flag = 0; //reset
+                label_flag = 0; /*reset*/
                 line_counter++;
-                strcpy(temp, str); //copy the string to temp
+                strcpy(temp, str); /*copy the string to temp*/
                 token = strtok(temp, " \t\n");
-                if (str[0] == ';' || token == NULL) { //if comment or empty line
+                if (str[0] == ';' || token == NULL) { /*if comment or empty line*/
                     algoCounter = 2;
                     break;
                 }
 
             case 3:
-                strcpy(temp, str); //copy the string to temp
+                strcpy(temp, str); /*copy the string to temp*/
                 token = strtok(temp, " \t");
-                if (strcmp(token, ".define") != 0) { //if not define statement move to 5
-                    if (strcasecmp(token, ".define") == 0) { //wrong define definition
+                if (strcmp(token, ".define") != 0) { /*if not define statement move to 5*/
+                    if (strcasecmp(token, ".define") == 0) { /*wrong define definition*/
                         error_flag = 1;
                         printf("Error: wrong define syntax | line:%d\n", line_counter);
                     }
@@ -67,22 +64,22 @@ int exe_first_pass(char *file_name) {
                     break;
                 }
             case 4:
-                if (strstr(str, ":") != NULL) { //if there's a label
+                if (strstr(str, ":") != NULL) { /*if there's a label*/
                     error_flag = 1;
                     printf("Error: label definition on a define command | line:%d\n", line_counter);
                     algoCounter = 2;
                     break;
                 }
-                token = strtok(NULL, " \t \n ="); //definition name
-                ptr = strtok(NULL, " \t \n ="); //definition value
-                if (num_check(ptr) == 1) { //if the value is not a number
+                token = strtok(NULL, " \t \n ="); /*definition name*/
+                ptr = strtok(NULL, " \t \n ="); /*definition value*/
+                if (num_check(ptr) == 1) { /*if the value is not a number*/
                     error_flag = 1;
                     printf("Error: wrong define syntax | line:%d\n", line_counter);
                     algoCounter = 2;
                     break;
                 }
                 value = atoi(ptr);
-                value = insertToSymbolTable(&symbol_table, token, value, ".mdefine", 0);
+                value = insert_to_symbol_table(&symbol_table, token, value, ".mdefine", 0);
                 if (value == 1) { /*failed to insert symbol*/
                     error_flag = 1;
                     printf(" | line:%d\n", line_counter);
@@ -92,10 +89,10 @@ int exe_first_pass(char *file_name) {
                 break;
 
             case 5:
-                strcpy(temp, str); //copy the string to temp
-                token = strtok(temp, " \t"); //first field in the word
+                strcpy(temp, str); /*copy the string to temp*/
+                token = strtok(temp, " \t"); /*first field in the word*/
 
-                if (strchr(token, ':') == NULL) {//not a label
+                if (strchr(token, ':') == NULL) { /*not a label*/
                     algoCounter = 7;
                     break;
                 }
@@ -105,19 +102,19 @@ int exe_first_pass(char *file_name) {
                     printf("Illegal label declaration | line:%d\n", line_counter);
                 }
 
-            case 6: //done
+            case 6:
                 label_flag = 1;
             case 7:
-                strcpy(temp, str); //copy the string to temp
+                strcpy(temp, str); /*copy the string to temp*/
                 token = strtok(temp, " \t");
-                if (label_flag == 1) { //advance to next field because it's a label
+                if (label_flag == 1) { /*advance to next field because it's a label*/
                     token = strtok(NULL, " \t");
                 }
 
                 if (strcmp(token, ".data") != 0
-                    && strcmp(token, ".string") != 0) { //not string or data
+                    && strcmp(token, ".string") != 0) { /*not string or data*/
                     if (strcasecmp(token, ".data") == 0
-                        || strcasecmp(token, ".string") == 0) { //wrong data or string
+                        || strcasecmp(token, ".string") == 0) { /*wrong data or string*/
                         error_flag = 1;
                         printf("wrong .data or .string | line:%d\n", line_counter);
                         algoCounter = 2;
@@ -129,10 +126,10 @@ int exe_first_pass(char *file_name) {
             case 8:
                 strcpy(temp, str);
                 token = strtok(temp, ":");
-                if (label_flag == 1) { //label
+                if (label_flag == 1) {
                     if (strcmp(strtok(NULL, " \t"), ".entry") != 0) { /*not .entry*/
-                        value = insertToSymbolTable(&symbol_table, token, DC, ".data", 0);
-                        if (value == 1) { //failed to insert label
+                        value = insert_to_symbol_table(&symbol_table, token, DC, ".data", 0);
+                        if (value == 1) { /*failed to insert label*/
                             error_flag = 1;
                             printf(" | line:%d\n", line_counter);
                         }
@@ -141,10 +138,10 @@ int exe_first_pass(char *file_name) {
                     }
                 }
             case 9:
-                strcpy(temp, str); //copy the string to temp
+                strcpy(temp, str); /*copy the string to temp*/
                 token = strtok(temp, " \t");
 
-                if (strstr(token, ":") != NULL) { //if it's a label
+                if (strstr(token, ":") != NULL) { /*if it's a label*/
                     token = strtok(NULL, " \t");
                 }
 
@@ -189,24 +186,24 @@ int exe_first_pass(char *file_name) {
                 break;
             case 10:
                 if (strstr(str, ".extern") == NULL
-                    && strstr(str, ".entry") == NULL) { //not .extern or .entry
+                    && strstr(str, ".entry") == NULL) { /*not .extern or .entry*/
                     algoCounter = 12;
                     break;
                 }
             case 11:
                 token = strtok(NULL, ", \n \t");
-                if (strstr(str, ".extern") != NULL) { //if its extern command
+                if (strstr(str, ".extern") != NULL) { /*if it's an extern command*/
                     while (token != NULL) {
-                        if (insertToSymbolTable(&symbol_table, token, 0, ".external", 0) == 1) { //failed to insert label
+                        if (insert_to_symbol_table(&symbol_table, token, 0, ".external", 0) == 1) { /*failed to insert label*/
                             error_flag = 1;
                             printf(" | line:%d\n", line_counter);
                         }
                         token = strtok(NULL, ", \n \t");
                     }
                 }
-                else if (strstr(str, ".entry") != NULL) { //if its entry command
+                else if (strstr(str, ".entry") != NULL) { /*if it's an entry command*/
                     while (token != NULL) {
-                        if (insertToSymbolTable(&symbol_table, token, -1, ".entry", 1) == 1) { //failed to insert label
+                        if (insert_to_symbol_table(&symbol_table, token, -1, ".entry", 1) == 1) { /*failed to insert label*/
                             error_flag = 1;
                             printf(" | line:%d\n", line_counter);
                         }
@@ -219,30 +216,29 @@ int exe_first_pass(char *file_name) {
                 }
                 algoCounter = 2;
                 break;
-            case 12: //done
-
+            case 12:
                 if (label_flag == 1) {
-                    strcpy(temp, str); //copy the string to temp
-                    token = strtok(temp, ":"); //label name
-                    if (insertToSymbolTable(&symbol_table, token, IC + 100, ".code", 0) == 1) { //failed to insert label
+                    strcpy(temp, str);
+                    token = strtok(temp, ":"); /*label name*/
+                    if (insert_to_symbol_table(&symbol_table, token, IC + IC_INITIAL, ".code", 0) == 1) { /*failed to insert label*/
                         error_flag = 1;
                         printf(" | line:%d\n", line_counter);
                     }
                 }
 
             case 13:
-                strcpy(temp, str); //copy the string to temp
+                strcpy(temp, str);
                 token = strtok(temp, " \t\n");
-                if (strstr(token, ":") != NULL) { //if there's a label
+                if (strstr(token, ":") != NULL) { /*if there's a label*/
                     token = strtok(NULL, " \t\n");
                 }
                 value = search_command(token);
-                if (value == -1) { //not a command
+                if (value == -1) { /*not a command*/
                     error_flag = 1;
                     printf("Error: can't recognise a command | line:%d\n", line_counter);
                 }
             case 14:
-                strcpy(temp, str); //copy the string to temp
+                strcpy(temp, str);
                 if (strstr(temp, ":") != NULL) { /*skip label*/
                     token = strtok(temp, ":");
                     token = strtok(NULL, ":\n");
@@ -250,13 +246,13 @@ int exe_first_pass(char *file_name) {
                 else {
                     token = temp;
                 }
-                L = findL(token);
-                if (L == -1) { //failed to find L
+                L = find_L(token);
+                if (L == -1) { /*failed to find L*/
                     error_flag = 1;
                     printf("Error: can't recognise a command | line:%d\n", line_counter);
                 }
 
-                strcpy(temp, str); //copy the string to temp
+                strcpy(temp, str);
                 if (strstr(temp, ":") !=NULL) { /*skip label*/
                     token = strtok(temp, ":");
                     token = strtok(NULL, ":");
@@ -275,25 +271,25 @@ int exe_first_pass(char *file_name) {
                     fprintf(machine, "%s", token);
                 free(token);
                 token = NULL;
-            case 15: //done
+            case 15:
                 IC += L;
                 algoCounter = 2;
                 break;
-            case 16: //done
+            case 16:
                 if (error_flag == 1) {
-                    algoCounter = 0; //finished first pass with errors
+                    algoCounter = 0; /*finished first pass with errors*/
                     break;
                 }
-            case 17: //done
+            case 17:
                 node = symbol_table;
                 while (node != NULL) {
                     if (strcmp(node -> identifier, ".data") == 0) {
-                        node -> value += IC + 100;
+                        node -> value += IC + IC_INITIAL;
                     }
                     node = node -> next;
                 }
-            case 18: //done
-                algoCounter = 0; //finished first pass successfully
+            case 18:
+                algoCounter = 0; /*finished first pass successfully*/
                 break;
             default:
                 return 1;

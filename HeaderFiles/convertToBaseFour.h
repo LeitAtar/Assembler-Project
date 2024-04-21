@@ -4,4 +4,4 @@
 int encrypt(char *file_name);
 char* convertToBaseFour(const char *str);
 
-#endif //ASSEMBLERPERSONAL_CONVERTTOBASEFOUR_H
+#endif

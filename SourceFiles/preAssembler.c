@@ -1,13 +1,11 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include "../HeaderFiles/DataStructures.h"
 #include "../HeaderFiles/globals.h"
 #include "../HeaderFiles/tables.h"
-#include "../HeaderFiles/secondPass.h"
-#include "../HeaderFiles/utilities.h"
 
 extern macro_list *mcr_table;
+
 int exe_pre_assembler(char *file_name) {
     FILE *fp, *fp2;
     char *token;
@@ -42,7 +40,7 @@ int exe_pre_assembler(char *file_name) {
                 line_counter++;
             case 2:
                 token = strtok(temp_line," \t");
-                node = isInMacroTable(mcr_table,token);
+                node = is_in_macro_table(mcr_table,token);
                 if(node != NULL) {
 
                     fprintf(fp2, "%s", node->content);
@@ -61,12 +59,12 @@ int exe_pre_assembler(char *file_name) {
                 is_mcr = 1;
             case 5:
                 strcpy(mcro_name, strtok(NULL, " \t"));
-                if (isInMacroTable(mcr_table, mcro_name) != NULL) {
+                if (is_in_macro_table(mcr_table, mcro_name) != NULL) {
                     error_flag = 1;
                     printf("macro already exists\n");
                 }
                 else {
-                    insertToMacroTable(&mcr_table, mcro_name, "");
+                    insert_to_macro_table(&mcr_table, mcro_name, "");
                 }
             case 6:
                 strcpy(temp_line, line);
@@ -78,7 +76,7 @@ int exe_pre_assembler(char *file_name) {
                 }
                 else if(is_mcr == 1 && strstr(line, "endmcr") == NULL)
                 {
-                    insertToMacroTable(&mcr_table, mcro_name, line);
+                    insert_to_macro_table(&mcr_table, mcro_name, line);
                     algo_counter = 1;
                     break;
                 }

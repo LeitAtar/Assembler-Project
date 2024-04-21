@@ -1,19 +1,16 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include "../HeaderFiles/DataStructures.h"
 #include "../HeaderFiles/globals.h"
 #include "../HeaderFiles/tables.h"
-#include "../HeaderFiles/firstPass.h"
 #include "../HeaderFiles/utilities.h"
 #include "../HeaderFiles/secondPass.h"
-#include "../HeaderFiles/preAssembler.h"
 #include "../HeaderFiles/convertToBaseFour.h"
 
 extern symbol_list *symbol_table;
 extern macro_list *mcr_table;
 
-int exe_second_pass(char *file_name, int IC, int DC) //symbol_list **symbol_table
+int exe_second_pass(char *file_name, int IC, int DC)
 {
     printf("Starting second pass on file: %s\n", file_name);
     symbol_list *node;
@@ -32,7 +29,11 @@ int exe_second_pass(char *file_name, int IC, int DC) //symbol_list **symbol_tabl
 
     if(fp == NULL || machine == NULL)
     {
-        printf("failed to open file\n"); // make an error message later
+        printf("Failed to open file (second pass)\n");
+        free(token);
+        token = NULL;
+        free(line);
+        line = NULL;
         return 1;
     }
     node = symbol_table;
@@ -80,7 +81,7 @@ int exe_second_pass(char *file_name, int IC, int DC) //symbol_list **symbol_tabl
         if(node == NULL)
         {
             error_flag = 1;
-            printf("error message\n"); // make an error message later
+            printf("Error: can't find symbol: %s | line:%d\n", temp_line, line_counter);
         }
         else
         {
@@ -92,26 +93,26 @@ int exe_second_pass(char *file_name, int IC, int DC) //symbol_list **symbol_tabl
             {
                 free(temp_line);
                 temp_line = NULL;
-                temp_line = decimalToBinary(node->value, 12);
+                temp_line = decimal_to_binary(node->value, 12);
                 temp_line = realloc(temp_line, strlen (temp_line) + 4);
                 if (temp_line == NULL)
                 {
                     error_flag = 1;
-                    printf("failed reallocation\n"); // make an error message later
+                    printf("Failed reallocation (second pass) | line:%d\n", line_counter);
                 }
                 strcat(temp_line, "10\n");
             }
             if(temp_line == NULL)
             {
                 error_flag = 1;
-                printf("error message\n"); // make an error message later
+                printf("Failed to convert to binary | line:%d\n", line_counter);
             }
             else
             {
                 fprintf(machine, "%s", temp_line);
             }
         }
-        //free(temp_line);
+        free(temp_line);
         temp_line = NULL;
     }
 
@@ -129,7 +130,7 @@ int exe_second_pass(char *file_name, int IC, int DC) //symbol_list **symbol_tabl
     fp = fopen(token, "r");
     if (fp == NULL || machine == NULL)
     {
-        printf("failed to open file\n"); // make an error message later
+        printf("Failed to open file (second pass)\n");
         free(token);
         token = NULL;
         free(line);
@@ -153,7 +154,7 @@ int exe_second_pass(char *file_name, int IC, int DC) //symbol_list **symbol_tabl
     line_counter = 0;
     while (!feof(fp)) {
         strcpy(token, "0");
-        sprintf(temp_line, "%d", 100 + line_counter);
+        sprintf(temp_line, "%d", IC_INITIAL + line_counter);
         strcat(token, temp_line);
         strcat(token, "\t");
         fgets(line, MAX_LINE_LENGTH, fp);
@@ -219,7 +220,6 @@ int exe_second_pass(char *file_name, int IC, int DC) //symbol_list **symbol_tabl
     node = NULL;
     free(temp_line);
     temp_line = NULL;
-    //free(symbol_table); //free the symbol table
     symbol_table = NULL;
 
     return 0;

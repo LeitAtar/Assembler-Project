@@ -1,12 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include "../HeaderFiles/DataStructures.h"
-#include "../HeaderFiles/globals.h"
-#include "../HeaderFiles/tables.h"
 #include "../HeaderFiles/firstPass.h"
-#include "../HeaderFiles/utilities.h"
-#include "../HeaderFiles/secondPass.h"
 #include "../HeaderFiles/preAssembler.h"
 
 int main(int argc, char *argv[]) {

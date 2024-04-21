@@ -3,4 +3,4 @@
 
 int exe_second_pass(char *file_name, int IC, int DC);
 
-#endif //ASSEMBLERPERSONAL_SECONDPASS_H
+#endif

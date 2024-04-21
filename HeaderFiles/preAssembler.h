@@ -3,4 +3,4 @@
 
 int exe_pre_assembler(char *file_name);
 
-#endif //ASSEMBLERPERSONAL_PREASSEMBLER_H
+#endif

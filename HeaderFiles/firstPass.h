@@ -3,4 +3,4 @@
 
 int exe_first_pass(char *file_name);
 
-#endif //ASSEMBLERPERSONAL_FIRSTPASS_H
+#endif
