@@ -209,8 +209,8 @@ char *to_binary (char *line) {
     char *binary_line = malloc(WORD_LENGTH);
     char *final = malloc(WORD_LENGTH * 5 + 2); /*each line is a maximum of five binary words*/
     char *token;
-    char *op1 = malloc(MAX_LINE_LENGTH);
-    char *op2 = malloc(MAX_LINE_LENGTH);
+    char *op1 = malloc(MAX_LABEL_LENGTH);
+    char *op2 = malloc(MAX_LABEL_LENGTH);
     char *op;
     char *temp = malloc(MAX_LINE_LENGTH);
     int value;
@@ -577,24 +577,26 @@ char *to_binary (char *line) {
                         op1 = NULL;
                         free(op2);
                         op2 = NULL;
+                        free(temp);
+                        temp = NULL;
                         free(final);
                         return NULL;
                     }
-                    strcpy(token, "");
-                    temp = decimal_to_binary(value,3);
-                    strcat(token, temp);
                     free(temp);
                     temp = NULL;
+                    temp = decimal_to_binary(value,3);
                     if (j == 0) { /*source register*/
                         strcat(binary_line, "000000");
-                        strcat(binary_line, token);
+                        strcat(binary_line, temp);
                         strcat(binary_line, "00000\n");
                     } else { /*j==1 destination register*/
                         strcat(binary_line, "000000000");
-                        strcat(binary_line, token);
+                        strcat(binary_line, temp);
                         strcat(binary_line, "00\n");
                     }
                     strcat(final, binary_line);
+                    free(temp);
+                    temp = NULL;
                     break;
                 default:
                     printf("Error: invalid command");
@@ -602,6 +604,8 @@ char *to_binary (char *line) {
                     op1 = NULL;
                     free(op2);
                     op2 = NULL;
+                    free(temp);
+                    temp = NULL;
                     free(final);
                     final = NULL;
                     return NULL;
