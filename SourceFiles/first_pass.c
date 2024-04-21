@@ -56,7 +56,7 @@ int exe_first_pass(char *file_name) {
                 strcpy(temp, str); /*copy the string to temp*/
                 token = strtok(temp, " \t");
                 if (strcmp(token, ".define") != 0) { /*if not define statement move to 5*/
-                    if (strcasecmp(token, ".define") == 0) { /*wrong define definition*/
+                    if (_stricmp(token, ".define") == 0) { /*wrong define definition*/
                         error_flag = 1;
                         printf("Error: wrong define syntax | line:%d\n", line_counter);
                     }
@@ -113,8 +113,8 @@ int exe_first_pass(char *file_name) {
 
                 if (strcmp(token, ".data") != 0
                     && strcmp(token, ".string") != 0) { /*not string or data*/
-                    if (strcasecmp(token, ".data") == 0
-                        || strcasecmp(token, ".string") == 0) { /*wrong data or string*/
+                    if (_stricmp(token, ".data") == 0
+                        || _stricmp(token, ".string") == 0) { /*wrong data or string*/
                         error_flag = 1;
                         printf("wrong .data or .string | line:%d\n", line_counter);
                         algoCounter = 2;

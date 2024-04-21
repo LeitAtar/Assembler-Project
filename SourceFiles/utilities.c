@@ -623,6 +623,8 @@ int ext_file_creator(char *file_name) {
     FILE *temp;
     char *token, *line, *temp_line;
     int algo_counter = 1, IC = IC_INITIAL, first_register;
+    symbol_list *node;
+
     fp = fopen(file_name, "r");
     if(fp == NULL)
     {
@@ -631,7 +633,6 @@ int ext_file_creator(char *file_name) {
     }
     line = malloc(MAX_LINE_LENGTH);
     temp_line = malloc(MAX_LINE_LENGTH);
-    symbol_list *node;
     strcpy(temp_line, file_name);
     token = strtok(temp_line, ".");
     strcpy(temp_line, token);
