@@ -174,6 +174,8 @@ int exe_first_pass(char *file_name) {
                     strcpy(temp, str);
                     strtok(temp, ".");
                     strtok(NULL, " \t\n");
+                    free(token);
+                    token = NULL;
                     token = strtok(NULL, " \t \n \" ");
                     DC += (int) strlen(token) + 1;
                 }
