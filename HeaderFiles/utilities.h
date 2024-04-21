@@ -47,7 +47,7 @@ int find_L(char *line);
 /**
  * @brief Searches for a command in C.
  *
- * This function takes a string as input and checks if it matches any of the predefined commands.
+ * This function takes a string as input and checks if it matches any of the predefined assembly commands.
  * If the input string matches a command, it returns the corresponding command code.
  * The command codes are as follows:
  * - mov: 0
