@@ -15,6 +15,7 @@ int exe_first_pass(char *file_name) {
     char *token = malloc(MAX_LINE_LENGTH);
     char *str, *temp, *ptr;
     symbol_list *node;
+    macro_list *mcr_node;
 
     FILE *fp = fopen(file_name, "r");
     FILE *machine = fopen("temp____", "w");
@@ -41,8 +42,11 @@ int exe_first_pass(char *file_name) {
                     algoCounter = 16;
                     break;
                 }
-
                 fgets(str, MAX_LINE_LENGTH, fp);
+                if (feof(fp)) { /*for ubuntu*/
+                    algoCounter = 16;
+                    break;
+                }
                 label_flag = 0; /*reset*/
                 line_counter++;
                 strcpy(temp, str); /*copy the string to temp*/
@@ -62,10 +66,12 @@ int exe_first_pass(char *file_name) {
                 strcpy(temp, str); /*copy the string to temp*/
                 token = strtok(temp, " \t");
                 if (strcmp(token, ".define") != 0) { /*if not define statement move to 5*/
-                    if (_stricmp(token, ".define") == 0) { /*wrong define definition*/
+                    /*if (_stricmp(token, ".define") == 0) { *//*wrong define definition*//*
                         error_flag = 1;
-                        printf("Error: wrong define syntax | line:%d\n", line_counter);
-                    }
+                        printf("Error: uppercase .define is illegal | line:%d\n", line_counter);
+                        algoCounter = 2;
+                        break;
+                    }*/
                     algoCounter = 5;
                     break;
                 }
@@ -112,20 +118,20 @@ int exe_first_pass(char *file_name) {
                 label_flag = 1;
             case 7:
                 strcpy(temp, str); /*copy the string to temp*/
-                token = strtok(temp, " \t");
+                token = strtok(temp, " \t\n");
                 if (label_flag == 1) { /*advance to next field because it's a label*/
-                    token = strtok(NULL, " \t");
+                    token = strtok(NULL, " \t\n");
                 }
 
                 if (strcmp(token, ".data") != 0
                     && strcmp(token, ".string") != 0) { /*not string or data*/
-                    if (_stricmp(token, ".data") == 0
-                        || _stricmp(token, ".string") == 0) { /*wrong data or string*/
+                    /*if (_stricmp(token, ".data") == 0
+                        || _stricmp(token, ".string") == 0) { *//*wrong data or string*//*
                         error_flag = 1;
-                        printf("wrong .data or .string | line:%d\n", line_counter);
+                        printf("Error: uppercase in .data or .string | line:%d\n", line_counter);
                         algoCounter = 2;
                         break;
-                    }
+                    }*/
                     algoCounter = 10;
                     break;
                 }
@@ -138,6 +144,8 @@ int exe_first_pass(char *file_name) {
                         if (value == 1) { /*failed to insert label*/
                             error_flag = 1;
                             printf(" | line:%d\n", line_counter);
+                            algoCounter = 2;
+                            break;
                         }
                     } else {
                         printf("Warning: entry label | line:%d\n", line_counter);
@@ -145,15 +153,21 @@ int exe_first_pass(char *file_name) {
                 }
             case 9:
                 strcpy(temp, str); /*copy the string to temp*/
-                token = strtok(temp, " \t");
+                token = strtok(temp, " \t\n");
 
                 if (strstr(token, ":") != NULL) { /*if it's a label*/
-                    token = strtok(NULL, " \t");
+                    token = strtok(NULL, " \t\n");
                 }
 
                 if (strcmp(token, ".data") == 0) {
                     token = strtok(NULL, "\n");
                     token = data_to_binary(token);
+                    if (token == NULL) {
+                        error_flag = 1;
+                        printf(" | line:%d\n", line_counter);
+                        algoCounter = 2;
+                        break;
+                    }
                     fprintf(machine, "%s", token);
                     free(token);
                     token = NULL;
@@ -188,6 +202,8 @@ int exe_first_pass(char *file_name) {
                 else {
                     error_flag = 1;
                     printf("Error: can't recognise a command | line:%d\n", line_counter);
+                    algoCounter = 2;
+                    break;
                 }
 
                 algoCounter = 2;
@@ -205,6 +221,8 @@ int exe_first_pass(char *file_name) {
                         if (insert_to_symbol_table(&symbol_table, token, 0, ".external", 0) == 1) { /*failed to insert label*/
                             error_flag = 1;
                             printf(" | line:%d\n", line_counter);
+                            algoCounter = 2;
+                            break;
                         }
                         token = strtok(NULL, ", \n \t");
                     }
@@ -214,6 +232,8 @@ int exe_first_pass(char *file_name) {
                         if (insert_to_symbol_table(&symbol_table, token, -1, ".entry", 1) == 1) { /*failed to insert label*/
                             error_flag = 1;
                             printf(" | line:%d\n", line_counter);
+                            algoCounter = 2;
+                            break;
                         }
                         token = strtok(NULL, ", \n \t");
                     }
@@ -221,6 +241,8 @@ int exe_first_pass(char *file_name) {
                 else {
                     error_flag = 1;
                     printf("Error: can't recognise a command | line:%d\n", line_counter);
+                    algoCounter = 2;
+                    break;
                 }
                 algoCounter = 2;
                 break;
@@ -231,6 +253,8 @@ int exe_first_pass(char *file_name) {
                     if (insert_to_symbol_table(&symbol_table, token, IC + IC_INITIAL, ".code", 0) == 1) { /*failed to insert label*/
                         error_flag = 1;
                         printf(" | line:%d\n", line_counter);
+                        algoCounter = 2;
+                        break;
                     }
                 }
 
@@ -244,6 +268,8 @@ int exe_first_pass(char *file_name) {
                 if (value == -1) { /*not a command*/
                     error_flag = 1;
                     printf("Error: can't recognise a command | line:%d\n", line_counter);
+                    algoCounter = 2;
+                    break;
                 }
             case 14:
                 strcpy(temp, str);
@@ -257,7 +283,9 @@ int exe_first_pass(char *file_name) {
                 L = find_L(token);
                 if (L == -1) { /*failed to find L*/
                     error_flag = 1;
-                    printf("Error: can't recognise a command | line:%d\n", line_counter);
+                    printf("Error: can't recognise a line | line:%d\n", line_counter);
+                    algoCounter = 2;
+                    break;
                 }
 
                 strcpy(temp, str);
@@ -274,6 +302,8 @@ int exe_first_pass(char *file_name) {
                 if (token == NULL) {
                     error_flag = 1;
                     printf(" | line:%d\n", line_counter);
+                    algoCounter = 2;
+                    break;
                 }
                 else
                     fprintf(machine, "%s", token);
@@ -309,21 +339,76 @@ int exe_first_pass(char *file_name) {
     str = NULL;
     free(temp);
     temp = NULL;
-    free(token);
+    /*free(token);*/
     token = NULL;
+
+    mcr_node = mcr_table;
+    while (mcr_node != NULL)
+    {
+        mcr_table = mcr_node;
+        free(mcr_node->name);
+        mcr_node->name = NULL;
+        free(mcr_node->content);
+        mcr_node->content = NULL;
+        mcr_node = mcr_node->next;
+        free(mcr_table);
+        mcr_table = NULL;
+    }
+
     if (error_flag == 1) {
         remove("temp____");
-        printf("Error: failed first pass on file: %s\n", file_name);
+        printf("Error: first pass failed on file: %s\n", file_name);
+
+        node = symbol_table;
+        while (node != NULL)
+        {
+            symbol_table = node;
+            free(node->identifier);
+            node->identifier = NULL;
+            free(node->symbol);
+            node->symbol = NULL;
+            node = node->next;
+            free(symbol_table);
+            symbol_table = NULL;
+        }
+
         return 1;
     }
 
     if (exe_second_pass(file_name, IC, DC) != 0) {
-        printf("Error: failed second pass on file: %s\n", file_name);
+        node = symbol_table;
+        while (node != NULL)
+        {
+            symbol_table = node;
+            free(node->identifier);
+            node->identifier = NULL;
+            free(node->symbol);
+            node->symbol = NULL;
+            node = node->next;
+            free(symbol_table);
+            symbol_table = NULL;
+        }
+
         return 1;
     }
     printf("File: %s assembled successfully\n", file_name);
+
+    node = symbol_table;
+    while (node != NULL)
+    {
+        symbol_table = node;
+        free(node->identifier);
+        node->identifier = NULL;
+        free(node->symbol);
+        node->symbol = NULL;
+        node = node->next;
+        free(symbol_table);
+        symbol_table = NULL;
+    }
+
     symbol_table = NULL;
     mcr_table = NULL;
+    mcr_node = NULL;
     node = NULL;
     return 0;
 }

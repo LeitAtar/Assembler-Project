@@ -15,6 +15,7 @@ int main(int argc, char *argv[]) {
         /*Execute the macro preprocessor on the ".as" file.*/
         if (exe_pre_assembler(file_name) != 0) {
             /*If it failed, move to the next file.*/
+            printf("\n");
             continue;
         }
         /* Generate a new file with the ".am" extension by adding it to the input filename.*/
@@ -24,8 +25,10 @@ int main(int argc, char *argv[]) {
         /*Execute the first pass, and then the second on the ".am" file.*/
         if (exe_first_pass(file_name) != 0) {
             /*If it failed, move to the next file.*/
+            printf("\n");
             continue;
         }
+        printf("\n");
     }
 
     /*Free allocated memory*/

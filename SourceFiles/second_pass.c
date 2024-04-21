@@ -8,7 +8,6 @@
 #include "../HeaderFiles/convert_to_base_four.h"
 
 extern symbol_list *symbol_table;
-extern macro_list *mcr_table;
 
 int exe_second_pass(char *file_name, int IC, int DC)
 {
@@ -187,7 +186,7 @@ int exe_second_pass(char *file_name, int IC, int DC)
         free(temp_line);
         temp_line = NULL;
         /*maybe delete file*/
-        printf("failed second assembly pass\n");
+        printf("Failed second pass on file: %s\n", file_name);
         return 1;
     }
     if(external_flag == 1)
@@ -217,11 +216,11 @@ int exe_second_pass(char *file_name, int IC, int DC)
     token = NULL;
     free(line);
     line = NULL;
-    free(node);
-    node = NULL;
     free(temp_line);
     temp_line = NULL;
-    symbol_table = NULL;
+    free(after_first_pass);
+    after_first_pass = NULL;
 
+    printf("Finished second pass successfully on file: %s\n", file_name);
     return 0;
 }

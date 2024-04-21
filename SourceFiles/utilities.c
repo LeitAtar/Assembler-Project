@@ -207,9 +207,9 @@ int check_operand(char *token) {
 
 char *to_binary (char *line) {
     char *binary_line = malloc(WORD_LENGTH);
-    char *final = malloc(WORD_LENGTH * 5); /*each line is a maximum of five binary words*/
+    char *final = malloc(WORD_LENGTH * 5 + 2); /*each line is a maximum of five binary words*/
     char *token;
-    char *op1 = malloc(MAX_LINE_LENGTH + 15);
+    char *op1 = malloc(MAX_LINE_LENGTH);
     char *op2 = malloc(MAX_LINE_LENGTH);
     char *op;
     char *temp = malloc(MAX_LINE_LENGTH);
@@ -350,8 +350,8 @@ char *to_binary (char *line) {
     }
     if (command == 4 || command == 5 || command >= 7) {
         if ((check_operand(op1) < 1 && command != 12)
-        || (check_operand(op1) == 2 && (command == 9 || command == 10 || command == 13))
-            ) {
+            || (check_operand(op1) == 2 && (command == 9 || command == 10 || command == 13))
+                ) {
             printf("Error: Invalid destination operand");
             free(op1);
             op1 = NULL;
@@ -736,11 +736,21 @@ char* data_to_binary (char* line) {
     symbol_list* node;
 
     strcpy(final, "");
+
+    if (line == NULL) {
+        printf("Error: data is empty");
+        free(final);
+        final = NULL;
+        free(temp);
+        temp = NULL;
+        return NULL;
+    }
+
     strcpy(temp, line);
     token = strtok(temp, " \t , \n");
 
     if (token == NULL) {
-        printf("Error: data is empty\n");
+        printf("Error: data is empty");
         free(final);
         final = NULL;
         free(temp);

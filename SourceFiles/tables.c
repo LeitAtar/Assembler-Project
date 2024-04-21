@@ -33,10 +33,10 @@ int insert_to_symbol_table(symbol_list **head, char *symbol, int value, char *id
         return 1;
     }
     if (strcmp(symbol, "r0") == 0 || strcmp(symbol, "r1") == 0 || strcmp(symbol, "r2") == 0
-    || strcmp(symbol, "r3") == 0 || strcmp(symbol, "r4") == 0 || strcmp(symbol, "r5") == 0
-    || strcmp(symbol, "r6") == 0 || strcmp(symbol, "r7") == 0 || strcmp(symbol, ".define") == 0
-    || strcmp(symbol, ".entry") == 0 || strcmp(symbol, ".extern") == 0 || strcmp(symbol, ".data") == 0
-    || strcmp(symbol, ".string") == 0 || search_command(symbol) != -1) {
+        || strcmp(symbol, "r3") == 0 || strcmp(symbol, "r4") == 0 || strcmp(symbol, "r5") == 0
+        || strcmp(symbol, "r6") == 0 || strcmp(symbol, "r7") == 0 || strcmp(symbol, ".define") == 0
+        || strcmp(symbol, ".entry") == 0 || strcmp(symbol, ".extern") == 0 || strcmp(symbol, ".data") == 0
+        || strcmp(symbol, ".string") == 0 || search_command(symbol) != -1) {
         printf("Error: symbol is a saved word (command or directive or register)");
         free(newSymbol);
         newSymbol = NULL;
@@ -97,7 +97,7 @@ int insert_to_macro_table(macro_list **table, char *mcro_name, char *content) {
     macro_list *node = is_in_macro_table(*table, mcro_name);
     if (node != NULL) {
         /* Reallocate memory for combined content*/
-        size_t new_size = strlen(node->content) + strlen(content) + 1; /* +1 for null terminator*/
+        size_t new_size = strlen(node->content) + strlen(content) + 2; /* +2 for null terminator and \n*/
         node->content = realloc(node->content, new_size);
         if (node->content == NULL) {
             /* Handle memory allocation failure*/

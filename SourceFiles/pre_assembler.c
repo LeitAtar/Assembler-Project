@@ -24,6 +24,12 @@ int exe_pre_assembler(char *file_name) {
 
     if (fp == NULL || fp2 == NULL) {
         printf("Error opening file\n");
+        free(mcro_name);
+        mcro_name = NULL;
+        free(line);
+        line = NULL;
+        free(temp_line);
+        temp_line = NULL;
         return 1;
     }
 
@@ -37,6 +43,10 @@ int exe_pre_assembler(char *file_name) {
                     break;
                 }
                 fgets(line, MAX_LINE_LENGTH, fp);
+                if (feof(fp)) { /*for ubuntu*/
+                    algo_counter = 9;
+                    break;
+                }
                 strcpy(temp_line, line);
                 line_counter++;
             case 2:
@@ -121,8 +131,10 @@ int exe_pre_assembler(char *file_name) {
 
     if (error_flag == 1)
     {
+        printf("Error: pre-assembler failed on file: %s\n", file_name);
         return 1;
     }
+    printf("Pre-assembler finished successfully on file: %s\n", file_name);
     return 0;
 }
 
