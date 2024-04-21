@@ -206,13 +206,13 @@ int check_operand(char *token) {
 
 
 char *to_binary (char *line) {
-    char *binary_line = malloc(WORD_LENGTH);
-    char *final = malloc(WORD_LENGTH * 5 + 2); /*each line is a maximum of five binary words*/
+    char *binary_line = calloc(WORD_LENGTH, sizeof(char));
+    char *final = calloc(WORD_LENGTH * 5 + 2, sizeof (char)); /*each line is a maximum of five binary words*/
     char *token;
-    char *op1 = malloc(MAX_LABEL_LENGTH);
-    char *op2 = malloc(MAX_LABEL_LENGTH);
+    char *op1 = calloc(MAX_LABEL_LENGTH, sizeof(char));
+    char *op2 = calloc(MAX_LABEL_LENGTH, sizeof(char));
     char *op;
-    char *temp = malloc(MAX_LINE_LENGTH);
+    char *temp = calloc(MAX_LINE_LENGTH, sizeof(char));
     int value;
     int command;
     int i, j, operands;
@@ -224,14 +224,16 @@ char *to_binary (char *line) {
     command = search_command(token);
     if (command == -1) {
         printf("Error: command doesn't exist");
-        free(binary_line);
-        binary_line = NULL;
-        free(final);
-        final = NULL;
         free(op1);
         op1 = NULL;
         free(op2);
         op2 = NULL;
+        free(temp);
+        temp = NULL;
+        free(binary_line);
+        binary_line = NULL;
+        free(final);
+        final = NULL;
         return NULL;
     }
 
@@ -256,14 +258,16 @@ char *to_binary (char *line) {
             strcat(binary_line, "00");
             value = check_operand(op1);
             if (value == -1) {
-                free(binary_line);
-                binary_line = NULL;
-                free(final);
-                final = NULL;
                 free(op1);
                 op1 = NULL;
                 free(op2);
                 op2 = NULL;
+                free(temp);
+                temp = NULL;
+                free(binary_line);
+                binary_line = NULL;
+                free(final);
+                final = NULL;
                 return NULL;
             }
             token = decimal_to_binary(value, 2);
@@ -276,14 +280,16 @@ char *to_binary (char *line) {
             strcpy(op2, token);
             value = check_operand(op1);
             if (value == -1) {
-                free(binary_line);
-                binary_line = NULL;
-                free(final);
-                final = NULL;
                 free(op1);
                 op1 = NULL;
                 free(op2);
                 op2 = NULL;
+                free(temp);
+                temp = NULL;
+                free(binary_line);
+                binary_line = NULL;
+                free(final);
+                final = NULL;
                 return NULL;
             }
             token = decimal_to_binary(value,2);
@@ -292,14 +298,16 @@ char *to_binary (char *line) {
             token = NULL;
             value = check_operand(op2);
             if (value == -1) {
-                free(binary_line);
-                binary_line = NULL;
-                free(final);
-                final = NULL;
                 free(op1);
                 op1 = NULL;
                 free(op2);
                 op2 = NULL;
+                free(temp);
+                temp = NULL;
+                free(binary_line);
+                binary_line = NULL;
+                free(final);
+                final = NULL;
                 return NULL;
             }
             token = decimal_to_binary(value,2);
@@ -326,7 +334,12 @@ char *to_binary (char *line) {
         op1 = NULL;
         free(op2);
         op2 = NULL;
+        free(temp);
+        temp = NULL;
+        free(binary_line);
+        binary_line = NULL;
         free(final);
+        final = NULL;
         return NULL;
     }
     if (command == 14 || command == 15) { /*operands variable is bigger than 0*/
@@ -335,7 +348,12 @@ char *to_binary (char *line) {
         op1 = NULL;
         free(op2);
         op2 = NULL;
+        free(temp);
+        temp = NULL;
+        free(binary_line);
+        binary_line = NULL;
         free(final);
+        final = NULL;
         return NULL;
     }
     /*dealing with 1 operand command errors*/
@@ -345,7 +363,12 @@ char *to_binary (char *line) {
         op1 = NULL;
         free(op2);
         op2 = NULL;
+        free(temp);
+        temp = NULL;
+        free(binary_line);
+        binary_line = NULL;
         free(final);
+        final = NULL;
         return NULL;
     }
     if (command == 4 || command == 5 || command >= 7) {
@@ -357,7 +380,12 @@ char *to_binary (char *line) {
             op1 = NULL;
             free(op2);
             op2 = NULL;
+            free(temp);
+            temp = NULL;
+            free(binary_line);
+            binary_line = NULL;
             free(final);
+            final = NULL;
             return NULL;
         }
     }
@@ -368,6 +396,10 @@ char *to_binary (char *line) {
         op1 = NULL;
         free(op2);
         op2 = NULL;
+        free(temp);
+        temp = NULL;
+        free(binary_line);
+        binary_line = NULL;
         free(final);
         final = NULL;
         return NULL;
@@ -381,7 +413,12 @@ char *to_binary (char *line) {
             op1 = NULL;
             free(op2);
             op2 = NULL;
+            free(temp);
+            temp = NULL;
+            free(binary_line);
+            binary_line = NULL;
             free(final);
+            final = NULL;
             return NULL;
         }
         if (check_operand(op2) < 1) {
@@ -391,7 +428,12 @@ char *to_binary (char *line) {
                 op1 = NULL;
                 free(op2);
                 op2 = NULL;
+                free(temp);
+                temp = NULL;
+                free(binary_line);
+                binary_line = NULL;
                 free(final);
+                final = NULL;
                 return NULL;
             }
         }
@@ -425,7 +467,7 @@ char *to_binary (char *line) {
         temp = NULL;
         for (; j < 2; ++j) {
             strcpy(binary_line, "");
-            temp = malloc(MAX_LINE_LENGTH);
+            temp = calloc(MAX_LINE_LENGTH, sizeof(char));
             switch (value) {
                 case 0: /*immediate*/
                     strcpy(temp, op);
@@ -436,6 +478,12 @@ char *to_binary (char *line) {
                         op1 = NULL;
                         free(op2);
                         op2 = NULL;
+                        free(temp);
+                        temp = NULL;
+                        free(binary_line);
+                        binary_line = NULL;
+                        free(final);
+                        final = NULL;
                         return NULL;
                     }
                     value = atoi(token);
@@ -449,6 +497,16 @@ char *to_binary (char *line) {
                         }
                         if (node == NULL) {
                             printf("Error: definition not found");
+                            free(op1);
+                            op1 = NULL;
+                            free(op2);
+                            op2 = NULL;
+                            free(temp);
+                            temp = NULL;
+                            free(binary_line);
+                            binary_line = NULL;
+                            free(final);
+                            final = NULL;
                             return NULL;
                         }
                         value = node->value;
@@ -456,6 +514,16 @@ char *to_binary (char *line) {
                     token = decimal_to_binary(value,12);
                     if (token == NULL) {
                         printf("Error: invalid number");
+                        free(op1);
+                        op1 = NULL;
+                        free(op2);
+                        op2 = NULL;
+                        free(temp);
+                        temp = NULL;
+                        free(binary_line);
+                        binary_line = NULL;
+                        free(final);
+                        final = NULL;
                         return NULL;
                     }
                     strcpy(binary_line, token);
@@ -544,6 +612,10 @@ char *to_binary (char *line) {
                             op1 = NULL;
                             free(op2);
                             op2 = NULL;
+                            free(temp);
+                            temp = NULL;
+                            free(binary_line);
+                            binary_line = NULL;
                             free(final);
                             final = NULL;
                             return NULL;
@@ -556,6 +628,10 @@ char *to_binary (char *line) {
                         op1 = NULL;
                         free(op2);
                         op2 = NULL;
+                        free(temp);
+                        temp = NULL;
+                        free(binary_line);
+                        binary_line = NULL;
                         free(final);
                         final = NULL;
                         return NULL;
@@ -579,7 +655,10 @@ char *to_binary (char *line) {
                         op2 = NULL;
                         free(temp);
                         temp = NULL;
+                        free(binary_line);
+                        binary_line = NULL;
                         free(final);
+                        final = NULL;
                         return NULL;
                     }
                     free(temp);
@@ -606,6 +685,8 @@ char *to_binary (char *line) {
                     op2 = NULL;
                     free(temp);
                     temp = NULL;
+                    free(binary_line);
+                    binary_line = NULL;
                     free(final);
                     final = NULL;
                     return NULL;
@@ -621,6 +702,10 @@ char *to_binary (char *line) {
     op1 = NULL;
     free(op2);
     op2 = NULL;
+    free(binary_line);
+    binary_line = NULL;
+    free(temp);
+    temp = NULL;
     return final;
 }
 
