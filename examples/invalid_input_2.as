@@ -31,3 +31,4 @@ LIST: .dATa 6, -9, len
 ;error
 K: .data
 .extern L3
+;ubuntu
