@@ -375,8 +375,7 @@ int exe_first_pass(char *file_name) {
     }
 
     if (error_flag == 1) {
-        printf("Error: first pass failed on file: %s\n", file_name);
-
+        printf("Failed first pass on file: %s\n", file_name);
         node = symbol_table;
         while (node != NULL)
         {
