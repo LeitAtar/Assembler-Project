@@ -126,8 +126,7 @@ int exe_pre_assembler(char *file_name) {
     line = NULL;
     free(temp_line);
     temp_line = NULL;
-    free(node);
-    node = NULL;
+
 
     if (error_flag == 1)
     {

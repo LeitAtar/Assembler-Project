@@ -137,8 +137,6 @@ int exe_second_pass(char *file_name, int IC, int DC)
         token = NULL;
         free(line);
         line = NULL;
-        free(node);
-        node = NULL;
         free(temp_line);
         temp_line = NULL;
         return 1;
