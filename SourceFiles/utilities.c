@@ -191,7 +191,7 @@ int check_operand(char *token) {
         return 2;
     }
 
-    if (token[0] == 'r') {
+    if (token[0] == 'r' && strlen(token) == 2) {
         if (token[1] >= '0' && token[1] <= '7')
             return 3;
         else {
@@ -820,7 +820,7 @@ char* data_to_binary (char* line) {
     char binary_line[WORD_LENGTH];
     char* final = calloc(WORD_LENGTH + 1, sizeof(char));
     char* token;
-    char* temp = calloc(WORD_LENGTH + 1, sizeof(char));
+    char* temp = calloc(MAX_LINE_LENGTH + 1, sizeof(char));
     int value;
     symbol_list* node;
 
@@ -858,10 +858,11 @@ char* data_to_binary (char* line) {
                 node = node->next;
             }
             if (node == NULL) {
-                printf("Error: data not found\n");
+                printf("Error: data not found");
                 free(final);
-                free(token);
+                final = NULL;
                 free(temp);
+                temp = NULL;
                 return NULL;
             }
         }
@@ -874,12 +875,14 @@ char* data_to_binary (char* line) {
         if (final == NULL) {
             printf("Memory re-allocation failed\n");
             free(temp);
+            temp = NULL;
             return NULL;
         }
         strcat(final, binary_line);
         token = strtok(NULL, " \t , \n");
     }
     free(temp);
+    temp = NULL;
     return final;
 }
 
@@ -901,7 +904,7 @@ char* string_to_binary (char* line) {
 
     strcpy(final, "");
     strcpy(temp, line);
-    if (strtok(temp, " \t , \n") == NULL) {
+    if (strtok(temp, "\n") == NULL) {
         printf("Error: string is empty");
         free(final);
         final = NULL;
@@ -910,7 +913,7 @@ char* string_to_binary (char* line) {
         return NULL;
     }
     strcpy(temp, line);
-    strcpy(token, strtok(temp, " \t , \n"));
+    strcpy(token, strtok(temp, "\n"));
     free(temp);
     temp = NULL;
     if (token[0] != '"' || token[strlen(token) - 1] != '"') {

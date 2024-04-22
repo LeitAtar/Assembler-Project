@@ -122,6 +122,11 @@ int exe_first_pass(char *file_name) {
                 token = strtok(temp, " \t\n");
                 if (label_flag == 1) { /*advance to next field because it's a label*/
                     token = strtok(NULL, " \t\n");
+                    if (token == NULL) { /*if it's only a label*/
+                        printf("Warning: label without a command | line:%d\n", line_counter);
+                        algoCounter = 2;
+                        break;
+                    }
                 }
 
                 if (strcmp(token, ".data") != 0
@@ -183,7 +188,7 @@ int exe_first_pass(char *file_name) {
                     }
                 }
                 else if (strcmp(token, ".string") == 0) {
-                    token = strtok(NULL, " \t");
+                    token = strtok(NULL, "\n\r");
                     token = string_to_binary(token);
                     if (token == NULL) {
                         error_flag = 1;
@@ -194,11 +199,11 @@ int exe_first_pass(char *file_name) {
                     fprintf(machine, "%s", token);
                     strcpy(temp, str);
                     strtok(temp, ".");
-                    strtok(NULL, " \t\n");
+                    strtok(NULL, "\"");
                     free(token);
                     token = NULL;
-                    token = strtok(NULL, " \t \n \" ");
-                    DC += (int) strlen(token) + 1;
+                    token = strtok(NULL, "\n\r");
+                    DC += (int) strlen(token);
                 }
                 else {
                     error_flag = 1;
@@ -355,7 +360,17 @@ int exe_first_pass(char *file_name) {
         mcr_table = NULL;
     }
 
-    if (exe_second_pass(file_name, IC, DC) != 0) {
+    node = symbol_table;
+    while (node != NULL)
+    {
+        if (node->is_entry == 1 && node->value == -1) {
+            error_flag = 1;
+            printf("Error: entry symbol not defined anywhere\n");
+        }
+        node = node->next;
+    }
+
+    if (exe_second_pass(file_name, IC, DC, error_flag) != 0) {
         node = symbol_table;
         while (node != NULL)
         {

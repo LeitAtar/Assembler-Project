@@ -9,7 +9,7 @@
 
 extern symbol_list *symbol_table;
 
-int exe_second_pass(char *file_name, int IC, int DC)
+int exe_second_pass(char *file_name, int IC, int DC, int prev_error)
 {
     symbol_list *node;
     FILE *fp, *machine;
@@ -188,11 +188,11 @@ int exe_second_pass(char *file_name, int IC, int DC)
         printf("Failed second pass on file: %s\n", file_name);
         return 1;
     }
-    if(external_flag == 1)
+    if(external_flag == 1 && prev_error == 0)
     {
         ext_file_creator(file_name);
     }
-    if(entry_flag == 1)
+    if(entry_flag == 1 && prev_error == 0)
     {
         strcpy(token, file_name);
         token = strtok(token, ".");

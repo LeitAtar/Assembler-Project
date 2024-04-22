@@ -53,7 +53,7 @@ int insert_to_symbol_table(symbol_list **head, char *symbol, int value, char *id
     }
 
     /*find the end of the list*/
-    while ((temp)->next != NULL) {
+    while (0 == 0) {
         if (strcmp(temp->symbol, symbol) == 0) {
             if (temp->value == -1 && strcmp(temp->identifier,".entry") == 0) {
                 temp->value = value;
@@ -73,6 +73,9 @@ int insert_to_symbol_table(symbol_list **head, char *symbol, int value, char *id
             free(temp_identifier);
             temp_identifier = NULL;
             return 1;
+        }
+        if (temp->next == NULL) {
+            break;
         }
         temp = (temp)->next;
     }

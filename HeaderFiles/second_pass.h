@@ -28,6 +28,6 @@
  * @param DC The Data Counter.
  * @return Returns 0 if the second pass operations are successful, 1 otherwise.
  */
-int exe_second_pass(char *file_name, int IC, int DC);
+int exe_second_pass(char *file_name, int IC, int DC, int prev_error);
 
 #endif
