@@ -368,7 +368,7 @@ int exe_first_pass(char *file_name) {
             free(symbol_table);
             symbol_table = NULL;
         }
-        if (error_flag = 1) {
+        if (error_flag == 1) {
             printf("Failed first pass on file: %s\n", file_name);
         }
         return 1;
