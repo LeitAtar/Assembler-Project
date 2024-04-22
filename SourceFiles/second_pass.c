@@ -81,7 +81,9 @@ int exe_second_pass(char *file_name, int IC, int DC)
         if(node == NULL)
         {
             error_flag = 1;
-            printf("Error: can't find symbol: %s | line:%d\n", temp_line, line_counter);
+            strcpy(token, temp_line);
+            token = strtok(token, "\n");
+            printf("Error: can't find symbol: %s | line:%d\n", token, line_counter);
         }
         else
         {
@@ -177,12 +179,11 @@ int exe_second_pass(char *file_name, int IC, int DC)
 
     if (error_flag == 1)
     {
+        remove(token);
         free(token);
         token = NULL;
         free(line);
         line = NULL;
-        free(node);
-        node = NULL;
         free(temp_line);
         temp_line = NULL;
         /*maybe delete file*/

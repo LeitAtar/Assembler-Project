@@ -355,8 +355,26 @@ int exe_first_pass(char *file_name) {
         mcr_table = NULL;
     }
 
+    if (exe_second_pass(file_name, IC, DC) != 0) {
+        node = symbol_table;
+        while (node != NULL)
+        {
+            symbol_table = node;
+            free(node->identifier);
+            node->identifier = NULL;
+            free(node->symbol);
+            node->symbol = NULL;
+            node = node->next;
+            free(symbol_table);
+            symbol_table = NULL;
+        }
+        if (error_flag = 1) {
+            printf("Failed first pass on file: %s\n", file_name);
+        }
+        return 1;
+    }
+
     if (error_flag == 1) {
-        remove("temp____");
         printf("Error: first pass failed on file: %s\n", file_name);
 
         node = symbol_table;
@@ -371,26 +389,16 @@ int exe_first_pass(char *file_name) {
             free(symbol_table);
             symbol_table = NULL;
         }
-
+        token = calloc(MAX_LINE_LENGTH, sizeof(char));
+        strcpy(token, file_name);
+        token = strtok(token, ".");
+        strcat(token, ".ob");
+        remove(token);
+        free(token);
+        token = NULL;
         return 1;
     }
 
-    if (exe_second_pass(file_name, IC, DC) != 0) {
-        node = symbol_table;
-        while (node != NULL)
-        {
-            symbol_table = node;
-            free(node->identifier);
-            node->identifier = NULL;
-            free(node->symbol);
-            node->symbol = NULL;
-            node = node->next;
-            free(symbol_table);
-            symbol_table = NULL;
-        }
-
-        return 1;
-    }
     printf("File: %s assembled successfully\n", file_name);
 
     node = symbol_table;
