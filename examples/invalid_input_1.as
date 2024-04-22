@@ -27,4 +27,3 @@ LIST: .dATa 6, -9, len
 K: .data
 .extern L3
 ;ubuntu
-;ubuntu

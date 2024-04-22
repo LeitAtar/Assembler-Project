@@ -40,4 +40,3 @@ ABC: mov XYZ, r3
 reg1: .data 6,5,-555,66
 reg2: .data 6,5,-555,66
 val: .string "asfas   %%dfjk"
-;ubuntu
