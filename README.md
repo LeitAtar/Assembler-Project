@@ -51,4 +51,4 @@ Detailed comments are present throughout the code for better understanding.
 
 🤝 **Creators** 🤝
 
-👏🏻 **Amitai Land and Dean Gabai ©** 👏🏻
+👏🏻 **Amitai Land and Dean Gabbai ©** 👏🏻
