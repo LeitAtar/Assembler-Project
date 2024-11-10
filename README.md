@@ -277,6 +277,8 @@ Creating this assembler was quite the adventure! Here are some of the challenges
 - **🔍 Error Handling:** Providing clear and helpful error messages was crucial. It's like having R2-D2 beep out diagnostics!
 - **🔐 Encryption Implementation:** Designing and implementing the custom encryption added an extra layer of complexity.
 - **🐛 Debugging:** Bugs are the dark side of coding. Squashing them required patience and a keen eye.
+- **🖥️ Cross-Platform Line Endings: Handling the difference in line endings between Windows (CR LF) and Unix-based systems (LF) caused unexpected issues. The carriage return characters added by Windows machines led to bugs that were difficult to trace and fix. Dealing with these hidden characters was particularly hellish and required careful handling of file input/output.
+
 
 ---
 
